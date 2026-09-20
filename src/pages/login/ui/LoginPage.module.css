@@ -1,0 +1,83 @@
+.root {
+  min-block-size: 100dvh;
+  display: grid;
+  grid-template-columns: 1fr;
+  background-color: var(--vfl-bg);
+}
+
+/* The 2-column split from the landing hero, reused here because the login
+   screen is the one admin surface that is still marketing. */
+@media (min-width: 62em) {
+  .root {
+    grid-template-columns: 1.15fr 1fr;
+  }
+}
+
+/* ---- Left: brand stage --------------------------------------------- */
+.stage {
+  position: relative;
+  display: none;
+  align-items: flex-end;
+  overflow: hidden;
+  background-color: #000;
+  background-image: url('@/shared/assets/hero.png');
+  background-size: cover;
+  background-position: center;
+  border-inline-end: 1px solid var(--vfl-border);
+}
+
+@media (min-width: 62em) {
+  .stage {
+    display: flex;
+  }
+}
+
+/* Two stacked overlays: a flat black wash to kill the photo's midtones, and
+   a red bloom from the lower left standing in for arena lighting. Text sits
+   above both, so contrast never depends on the image. */
+.stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 90% at 10% 100%, rgba(203, 1, 6, 0.28) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(5, 5, 5, 0.72) 0%, rgba(5, 5, 5, 0.94) 78%, #050505 100%);
+}
+
+.stageInner {
+  position: relative;
+  padding: 5vw;
+  max-inline-size: 620px;
+}
+
+.stageTitle {
+  font-size: clamp(64px, 6vw, 104px);
+  line-height: 0.82;
+}
+
+.stageBody {
+  margin-block-start: 26px;
+  max-inline-size: 420px;
+  color: var(--vfl-gray);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+/* ---- Right: form --------------------------------------------------- */
+.formSide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background-color: var(--vfl-bg);
+}
+
+.formInner {
+  inline-size: 100%;
+  max-inline-size: 400px;
+}
+
+.formTitle {
+  font-size: 54px;
+  line-height: 0.86;
+}

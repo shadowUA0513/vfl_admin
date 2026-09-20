@@ -1,0 +1,177 @@
+.root {
+  min-block-size: 100dvh;
+  display: grid;
+  grid-template-columns: 1fr;
+  background-color: var(--vfl-bg);
+}
+
+@media (min-width: 62em) {
+  .root {
+    grid-template-columns: var(--vfl-sidebar-w) 1fr;
+  }
+}
+
+/* ---- Sidebar -------------------------------------------------------- */
+.sidebar {
+  display: none;
+  flex-direction: column;
+  background-color: var(--vfl-bg-soft);
+  border-inline-end: 1px solid var(--vfl-border);
+  position: sticky;
+  inset-block-start: 0;
+  block-size: 100dvh;
+  overflow-y: auto;
+}
+
+@media (min-width: 62em) {
+  .sidebar {
+    display: flex;
+  }
+}
+
+.drawer {
+  background-color: var(--vfl-bg-soft);
+  border-inline-end: 1px solid var(--vfl-border);
+}
+
+.drawerBody {
+  padding: 0;
+}
+
+/* ---- Brand ---------------------------------------------------------- */
+/* Two nested boxes on purpose: the outer one centres the lockup in the
+   header band, the inner one sits the two words on a shared baseline.
+   Doing both on one flex container does not work — `align-items: baseline`
+   pins the row to the cross-start edge, which is what was crowding the
+   caps against the top border. */
+.brand {
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  block-size: var(--vfl-topbar-h);
+  border-block-end: 1px solid var(--vfl-border);
+}
+
+.brandRow {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+}
+
+.brandMark {
+  font-size: 38px;
+  letter-spacing: 0.01em;
+}
+
+/* Demoted to grey: with the mark now red, a red qualifier beside it gives
+   the eye two competing accents in a 90px-wide lockup. */
+.brandSub {
+  color: var(--vfl-gray-muted);
+  font-size: 10px;
+}
+
+/* ---- Nav ------------------------------------------------------------ */
+.nav {
+  display: flex;
+  flex-direction: column;
+  padding-block: 18px;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 24px;
+  color: var(--vfl-gray);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: var(--vfl-tracking-nav);
+  text-transform: uppercase;
+  /* Transparent rail on every item so the active state doesn't shift text
+     sideways when it appears. */
+  border-inline-start: 2px solid transparent;
+  transition:
+    color var(--vfl-dur-hover) var(--vfl-ease),
+    border-color var(--vfl-dur-hover) var(--vfl-ease),
+    background-color var(--vfl-dur-hover) var(--vfl-ease);
+}
+
+.navLink:hover {
+  color: var(--vfl-white-soft);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.navLinkActive,
+.navLinkActive:hover {
+  color: var(--vfl-white);
+  border-inline-start-color: var(--vfl-red);
+  background-color: var(--vfl-card);
+}
+
+.navIcon {
+  flex: none;
+  opacity: 0.9;
+}
+
+/* ---- Main ----------------------------------------------------------- */
+.main {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  block-size: var(--vfl-topbar-h);
+  padding-inline: clamp(16px, 3vw, 32px);
+  border-block-end: 1px solid var(--vfl-border);
+  background-color: var(--vfl-bg-soft);
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 10;
+}
+
+.burger {
+  display: block;
+}
+
+@media (min-width: 62em) {
+  .burger {
+    display: none;
+  }
+}
+
+.menuHead {
+  padding: 14px 14px 12px;
+  border-block-end: 1px solid var(--vfl-border);
+}
+
+.content {
+  flex: 1;
+  padding: clamp(24px, 3vw, 40px);
+  max-inline-size: var(--vfl-shell-max);
+  inline-size: 100%;
+  /* Re-keyed on route change in AdminLayout, so this replays per page. */
+  animation: content-in var(--vfl-dur-entrance) var(--vfl-ease) both;
+}
+
+@keyframes content-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content {
+    animation: none;
+  }
+}

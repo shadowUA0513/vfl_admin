@@ -1,0 +1,46 @@
+.root {
+  min-block-size: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--vfl-bg);
+}
+
+/* Same lockup as the sidebar brand, scaled up. */
+.mark {
+  font-size: 66px;
+  margin-block-end: 28px;
+}
+
+.track {
+  inline-size: 180px;
+  block-size: var(--vfl-accent-height);
+  background-color: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.bar {
+  block-size: 100%;
+  inline-size: 40%;
+  background-color: var(--vfl-red);
+  animation: sweep 1100ms var(--vfl-ease) infinite;
+}
+
+/* A sweep rather than a spinner: it reads as the design system's "red accent
+   animates across" motif instead of a generic loader. */
+@keyframes sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(350%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    animation: none;
+    inline-size: 100%;
+  }
+}

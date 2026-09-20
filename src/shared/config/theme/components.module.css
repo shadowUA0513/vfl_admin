@@ -1,0 +1,262 @@
+/* Component overrides wired in via Component.extend({ classNames }) in
+   theme.ts. Everything here is the part of the design system that props
+   can't express: clip paths, accent lines, uppercase tracking, hover lift. */
+
+/* ---- Title --------------------------------------------------------- */
+.title {
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  color: var(--vfl-white);
+}
+
+/* ---- Button -------------------------------------------------------- */
+.button {
+  text-transform: uppercase;
+  letter-spacing: var(--vfl-tracking-button);
+  font-weight: 700;
+  border-radius: 0;
+  transition:
+    transform var(--vfl-dur-hover) var(--vfl-ease),
+    background-color var(--vfl-dur-hover) var(--vfl-ease),
+    border-color var(--vfl-dur-hover) var(--vfl-ease),
+    color var(--vfl-dur-hover) var(--vfl-ease);
+}
+
+.buttonLabel {
+  /* Tracking pushes the last glyph off the optical centre; a matching
+     indent pulls the whole label back. */
+  text-indent: var(--vfl-tracking-button);
+}
+
+.button:hover:not(:disabled):not([data-loading]) {
+  transform: translateY(var(--vfl-lift));
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Primary CTA only — the skew is a signature, so it is reserved for filled
+   buttons. Table row actions stay rectangular or the grid reads as broken. */
+.button[data-variant='filled'] {
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  padding-inline: 34px;
+  background-color: var(--vfl-red);
+}
+
+.button[data-variant='filled']:hover:not(:disabled) {
+  background-color: var(--vfl-red-bright);
+}
+
+/* Large filled buttons get the full landing-page padding. */
+.button[data-variant='filled'][data-size='lg'] {
+  padding-block: 20px;
+  padding-inline: 40px;
+  height: auto;
+}
+
+.button[data-variant='outline'],
+.button[data-variant='default'] {
+  border-color: var(--vfl-border-strong);
+  color: var(--vfl-white-soft);
+  background-color: transparent;
+}
+
+.button[data-variant='outline']:hover:not(:disabled),
+.button[data-variant='default']:hover:not(:disabled) {
+  border-color: var(--vfl-red-border);
+  color: var(--vfl-red-bright);
+  background-color: transparent;
+}
+
+.button[data-variant='subtle']:hover:not(:disabled) {
+  background-color: transparent;
+  color: var(--vfl-red-bright);
+}
+
+/* ---- Paper / Card -------------------------------------------------- */
+.paper,
+.card {
+  background-color: var(--vfl-card);
+  border-color: var(--vfl-border);
+  border-radius: 0;
+  position: relative;
+}
+
+/* Top accent line. Opt in with data-accent so it stays a deliberate mark
+   rather than something every surface wears. */
+.paper[data-accent],
+.card[data-accent] {
+  border-top-color: transparent;
+}
+
+.paper[data-accent]::before,
+.card[data-accent]::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: var(--vfl-accent-height);
+  background-color: var(--vfl-red);
+}
+
+/* ---- Badge --------------------------------------------------------- */
+.badge {
+  border-radius: 0;
+  font-weight: 700;
+  letter-spacing: var(--vfl-tracking-label);
+  text-transform: uppercase;
+  font-family: var(--vfl-font-body);
+}
+
+.badgeLabel {
+  text-indent: var(--vfl-tracking-label);
+}
+
+/* ---- Inputs -------------------------------------------------------- */
+.input {
+  background-color: var(--vfl-bg-soft);
+  border-color: var(--vfl-border);
+  border-radius: 0;
+  color: var(--vfl-white-soft);
+  transition: border-color var(--vfl-dur-hover) var(--vfl-ease);
+}
+
+.input:focus,
+.input:focus-within {
+  border-color: var(--vfl-red);
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--vfl-gray-muted);
+}
+
+.inputLabel {
+  text-transform: uppercase;
+  letter-spacing: var(--vfl-tracking-label);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--vfl-gray);
+  margin-block-end: 8px;
+}
+
+/* ---- Table --------------------------------------------------------- */
+.table {
+  --table-border-color: var(--vfl-border);
+  border-collapse: collapse;
+}
+
+.th {
+  text-transform: uppercase;
+  letter-spacing: var(--vfl-tracking-label);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--vfl-gray-muted);
+  background-color: var(--vfl-bg-soft);
+  border-block-end: 1px solid var(--vfl-border);
+  white-space: nowrap;
+}
+
+.td {
+  border-block-end: 1px solid var(--vfl-border);
+  color: var(--vfl-white-soft);
+  font-size: 14px;
+}
+
+/* ---- Tabs ---------------------------------------------------------- */
+.tabList {
+  border-block-end: 1px solid var(--vfl-border);
+  gap: 4px;
+}
+
+.tab {
+  border-radius: 0;
+  border: none;
+  border-block-end: 2px solid transparent;
+  text-transform: uppercase;
+  letter-spacing: var(--vfl-tracking-nav);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--vfl-gray-muted);
+  background-color: transparent;
+  transition: color var(--vfl-dur-hover) var(--vfl-ease);
+}
+
+.tab:hover {
+  background-color: transparent;
+  color: var(--vfl-white-soft);
+}
+
+.tab[data-active],
+.tab[data-active]:hover {
+  color: var(--vfl-white);
+  border-block-end-color: var(--vfl-red);
+  background-color: transparent;
+}
+
+/* ---- Modal --------------------------------------------------------- */
+.modalContent {
+  background-color: var(--vfl-card);
+  border: 1px solid var(--vfl-border);
+  border-block-start: var(--vfl-accent-height) solid var(--vfl-red);
+  border-radius: 0;
+}
+
+.modalHeader {
+  background-color: transparent;
+  border-block-end: 1px solid var(--vfl-border);
+  padding-block: 20px;
+}
+
+.modalTitle {
+  font-family: var(--vfl-font-display);
+  font-size: 24px;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: var(--vfl-white);
+}
+
+/* ---- Menu / Select dropdown ---------------------------------------- */
+.dropdown {
+  background-color: var(--vfl-card);
+  border: 1px solid var(--vfl-border);
+  border-radius: 0;
+}
+
+.menuItem {
+  border-radius: 0;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.menuItem[data-hovered],
+.menuItem:hover {
+  background-color: var(--vfl-bg-soft);
+  color: var(--vfl-red-bright);
+}
+
+/* ---- Tooltip ------------------------------------------------------- */
+.tooltip {
+  border-radius: 0;
+  background-color: var(--vfl-red);
+  color: var(--vfl-white);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: var(--vfl-tracking-label);
+  text-transform: uppercase;
+}
+
+/* ---- Anchor -------------------------------------------------------- */
+.anchor {
+  color: var(--vfl-red-bright);
+  text-decoration: none;
+  border-block-end: 1px solid var(--vfl-red-border);
+  transition: border-color var(--vfl-dur-hover) var(--vfl-ease);
+}
+
+.anchor:hover {
+  text-decoration: none;
+  border-block-end-color: var(--vfl-red-bright);
+}

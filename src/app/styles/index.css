@@ -1,0 +1,156 @@
+@import './tokens.css';
+
+/* Mantine is loaded as `@mantine/core/styles.layer.css`, which wraps every
+   Mantine rule in `@layer mantine`. Unlayered CSS — everything in this file
+   and in the theme's CSS modules — always wins over it, so overrides don't
+   depend on import order or on stacking selectors. */
+@layer mantine;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  block-size: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--vfl-bg);
+  color: var(--vfl-white-soft);
+  font-family: var(--vfl-font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--vfl-red);
+  color: var(--vfl-white);
+}
+
+/* Dark, thin, square — the default OS scrollbar reads as a light-mode
+   artifact against #050505. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2a2426 transparent;
+}
+
+*::-webkit-scrollbar {
+  inline-size: 8px;
+  block-size: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #2a2426;
+  border-radius: 0;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--vfl-red-dim);
+}
+
+/* ==================================================================== */
+/* Utilities                                                            */
+/* ==================================================================== */
+
+/* Small uppercase kicker above a section or panel heading. */
+.vfl-label {
+  font-family: var(--vfl-font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: var(--vfl-tracking-label);
+  text-transform: uppercase;
+  color: var(--vfl-gray-muted);
+}
+
+.vfl-label--red {
+  color: var(--vfl-red-bright);
+}
+
+/* Condensed display type for anything numeric that should read as a
+   scoreboard: KPI values, fight records, weights, round counts. */
+.vfl-display {
+  font-family: var(--vfl-font-display);
+  text-transform: uppercase;
+  line-height: 0.82;
+  letter-spacing: -0.01em;
+  color: var(--vfl-white);
+}
+
+/* The VFL lockup. Oswald 700 rather than Bebas because the mark has to hold
+   its own at small sizes against the nav below it, and line-height 1 keeps
+   the caps inside their box — .vfl-display's 0.82 lets them overflow, which
+   clips the tops in a fixed-height header. */
+.vfl-wordmark {
+  font-family: var(--vfl-font-wordmark);
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--vfl-red-bright);
+}
+
+/* Tabular figures so columns of numbers don't jitter between rows. */
+.vfl-numeric {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Thin red rule used to underline a section heading. Animates open on
+   mount, per the design system's "width 0 to full" accent. */
+.vfl-rule {
+  block-size: var(--vfl-accent-height);
+  inline-size: 100%;
+  background-color: var(--vfl-red);
+  transform-origin: left center;
+  animation: vfl-rule-in var(--vfl-dur-entrance) var(--vfl-ease) both;
+}
+
+@keyframes vfl-rule-in {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Cinematic entrance: fade + rise. Applied to page roots and to panels
+   that mount after data arrives. */
+.vfl-enter {
+  animation: vfl-enter var(--vfl-dur-entrance) var(--vfl-ease) both;
+}
+
+@keyframes vfl-enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger helpers for lists of panels. */
+.vfl-enter-1 { animation-delay: 60ms; }
+.vfl-enter-2 { animation-delay: 120ms; }
+.vfl-enter-3 { animation-delay: 180ms; }
+.vfl-enter-4 { animation-delay: 240ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .vfl-enter,
+  .vfl-rule {
+    animation: none;
+  }
+}

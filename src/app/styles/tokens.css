@@ -1,0 +1,82 @@
+/* VFL DESIGN SYSTEM — raw tokens.
+   Single source of truth. The Mantine theme reads from these where it can;
+   anything Mantine doesn't model (accents, clip paths, motion) is consumed
+   directly by component CSS modules. */
+
+:root {
+  /* ---- Surfaces ---------------------------------------------------- */
+  --vfl-bg: #050505;
+  --vfl-bg-soft: #090909;
+  --vfl-card: #0d090a;
+  --vfl-card-translucent: rgba(13, 9, 10, 0.88);
+
+  /* ---- Brand ------------------------------------------------------- */
+  --vfl-red: #cb0106;
+  --vfl-red-bright: #f0171d;
+  --vfl-red-dim: #7d0104;
+
+  /* ---- Text -------------------------------------------------------- */
+  --vfl-white: #ffffff;
+  --vfl-white-soft: #e8e8e8;
+  --vfl-gray: #a5a5a5;
+  --vfl-gray-muted: #777777;
+
+  /* ---- Lines ------------------------------------------------------- */
+  --vfl-border: rgba(255, 255, 255, 0.12);
+  --vfl-border-strong: rgba(255, 255, 255, 0.22);
+  --vfl-red-border: rgba(203, 1, 6, 0.45);
+  --vfl-accent-height: 2px;
+
+  /* ---- Type -------------------------------------------------------- */
+  --vfl-font-display: 'Bebas Neue', 'Oswald', 'Barlow Condensed', sans-serif;
+  --vfl-font-body: 'Inter Variable', 'Inter', system-ui, sans-serif;
+
+  /* The wordmark gets its own face. Bebas Neue ships one weight, so asking
+     it for bold produces a synthetic smear; Oswald is condensed in the same
+     register and has a real 700. Reserved for the VFL lockup — headings
+     stay on Bebas. */
+  --vfl-font-wordmark: 'Oswald', 'Bebas Neue', sans-serif;
+
+  /* Uppercase chrome: nav, buttons, table headers, section labels.
+     Tracking is what carries the aesthetic at admin sizes, not size. */
+  --vfl-tracking-label: 0.2em;
+  --vfl-tracking-nav: 0.12em;
+  --vfl-tracking-button: 0.1em;
+
+  /* ---- Geometry ---------------------------------------------------- */
+  /* Sharp by mandate. 2px is the ceiling, used only on inline chips. */
+  --vfl-radius: 0px;
+  --vfl-radius-chip: 2px;
+
+  /* Admin density: the landing page's 36-42px card padding is too loose
+     for data screens, so panels step down while keeping the proportions. */
+  --vfl-pad-panel: 28px;
+  --vfl-pad-panel-lg: 40px;
+  --vfl-pad-cell: 14px 18px;
+
+  --vfl-shell-max: 1500px;
+  --vfl-sidebar-w: 260px;
+  --vfl-topbar-h: 68px;
+
+  /* ---- Motion ------------------------------------------------------ */
+  --vfl-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --vfl-dur-entrance: 560ms;
+  --vfl-dur-hover: 180ms;
+  --vfl-lift: -2px;
+
+  /* ---- Status ------------------------------------------------------ */
+  /* Admin needs states the brand palette doesn't cover. Kept desaturated
+     and outline-only so red stays the loudest thing on screen. */
+  --vfl-status-live: var(--vfl-red-bright);
+  --vfl-status-ok: #3f9a5c;
+  --vfl-status-warn: #b8892b;
+  --vfl-status-idle: var(--vfl-gray-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --vfl-dur-entrance: 1ms;
+    --vfl-dur-hover: 1ms;
+    --vfl-lift: 0px;
+  }
+}

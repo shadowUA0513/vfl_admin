@@ -1,0 +1,11 @@
+.alert {
+  border-color: var(--vfl-red-border);
+  background-color: rgba(203, 1, 6, 0.08);
+  color: var(--vfl-white-soft);
+}
+
+.mockNote {
+  margin-block-start: 40px;
+  padding-block-start: 24px;
+  border-block-start: 1px solid var(--vfl-border);
+}
