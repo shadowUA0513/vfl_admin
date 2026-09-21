@@ -14,9 +14,6 @@ export function DashboardPage() {
   return (
     <Stack gap={44}>
       <Box>
-        <Text className="vfl-label" mb={12}>
-          Signed in as {user?.role}
-        </Text>
         <Title order={1}>{user?.name ?? 'Dashboard'}</Title>
         <Box className="vfl-rule" mt={18} style={{ maxWidth: 64 }} />
       </Box>
@@ -40,14 +37,8 @@ export function DashboardPage() {
       </SimpleGrid>
 
       <Paper p="var(--vfl-pad-panel)">
-        <Text className="vfl-label" mb={12}>
-          Placeholder
-        </Text>
-        <Text c="var(--vfl-gray)" fz={14} maw={620}>
-          Figures above are static. Wire them to the API by adding a query in
-          this slice's <code>api</code> segment — the axios client already
-          attaches the session token, and a 401 anywhere returns the user to
-          the login screen automatically.
+        <Text c="var(--vfl-gray)" fz={14}>
+          Figures above are placeholders, not yet wired to the API.
         </Text>
       </Paper>
     </Stack>

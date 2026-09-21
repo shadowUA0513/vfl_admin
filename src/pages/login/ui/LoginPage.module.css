@@ -14,7 +14,18 @@
 }
 
 /* ---- Left: brand stage --------------------------------------------- */
+/* This panel is always dark, in both schemes, because it sits on a
+   photograph. So the text tokens are pinned to their dark-scheme values
+   for everything inside it — otherwise light mode paints near-black
+   headings and dark-red labels straight onto the black photo.
+   Scoping them here means the markup stays scheme-agnostic. */
 .stage {
+  --vfl-white: #ffffff;
+  --vfl-white-soft: #e8e8e8;
+  --vfl-gray: #a5a5a5;
+  --vfl-gray-muted: #777777;
+  --vfl-red-bright: #f0171d;
+
   position: relative;
   display: none;
   align-items: flex-end;
@@ -40,7 +51,7 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(120% 90% at 10% 100%, rgba(203, 1, 6, 0.28) 0%, transparent 55%),
+    radial-gradient(120% 90% at 10% 100%, rgba(240, 23, 29, 0.26) 0%, transparent 55%),
     linear-gradient(180deg, rgba(5, 5, 5, 0.72) 0%, rgba(5, 5, 5, 0.94) 78%, #050505 100%);
 }
 
@@ -65,6 +76,7 @@
 
 /* ---- Right: form --------------------------------------------------- */
 .formSide {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -80,4 +92,10 @@
 .formTitle {
   font-size: 54px;
   line-height: 0.86;
+}
+
+.toggleSlot {
+  position: absolute;
+  inset-block-start: 20px;
+  inset-inline-end: 20px;
 }

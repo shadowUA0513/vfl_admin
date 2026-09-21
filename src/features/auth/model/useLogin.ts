@@ -17,8 +17,10 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: login,
-    onSuccess: ({ token, user }) => {
-      signIn(token, user)
+    onSuccess: ({ token, user, expires_at }) => {
+      /* expires_at is what drives automatic sign-out; without it the app
+         would only notice expiry on the next 401. */
+      signIn(token, user, expires_at)
       /* Return the user to the page the guard intercepted, or the dashboard
          on a direct visit. `replace` keeps /login out of history so Back
          doesn't land on a screen they can no longer see. */

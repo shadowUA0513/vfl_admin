@@ -4,10 +4,31 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VFL — Admin</title>
+    <title>VFL</title>
     <meta name="theme-color" content="#050505" />
+    <script>
+      /* Applies the saved colour scheme before first paint. Without this the
+         page renders in the default scheme for a frame and then flips, which
+         is very visible when going from a white default to #050505. Mantine
+         reads and writes this same localStorage key. */
+      (function () {
+        try {
+          var stored = localStorage.getItem('mantine-color-scheme-value')
+          var scheme = stored === 'light' || stored === 'dark' ? stored : 'dark'
+          var background = scheme === 'light' ? '#ffffff' : '#050505'
+          document.documentElement.setAttribute('data-mantine-color-scheme', scheme)
+          document.documentElement.style.backgroundColor = background
+          document
+            .querySelector('meta[name="theme-color"]')
+            .setAttribute('content', background)
+        } catch (error) {
+          /* Blocked storage — the default dark scheme already applies. */
+          document.documentElement.style.backgroundColor = '#050505'
+        }
+      })()
+    </script>
   </head>
-  <body style="background-color:#050505">
+  <body>
     <div id="root"></div>
     <script type="module" src="/src/app/main.tsx"></script>
   </body>

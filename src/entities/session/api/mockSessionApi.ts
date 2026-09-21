@@ -13,9 +13,8 @@ import type { Credentials, LoginResponse } from '../model/types'
 /* ------------------------------------------------------------------ */
 
 const ACCOUNTS: Array<{ user: User }> = [
-  { user: { id: 'u_1', email: 'admin@vfl.com', name: 'Umarjon', role: 'superadmin' } },
+  { user: { id: 'u_1', email: 'admin@vfl.com', name: 'Umarjon', role: 'super_admin' } },
   { user: { id: 'u_2', email: 'editor@vfl.com', name: 'Match Editor', role: 'editor' } },
-  { user: { id: 'u_3', email: 'viewer@vfl.com', name: 'Read Only', role: 'viewer' } },
 ]
 
 /* Anything that isn't one of the named accounts lands here, so an unknown
@@ -52,7 +51,11 @@ export async function mockLogin({ email }: Credentials): Promise<LoginResponse> 
   )
   const account = match ?? DEFAULT_ACCOUNT
 
-  return { token: `${TOKEN_PREFIX}${account.user.id}`, user: account.user }
+  /* Mirrors the real API so automatic expiry behaves the same in mock mode.
+     Shorten this to test the sign-out path without waiting a day. */
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+
+  return { token: `${TOKEN_PREFIX}${account.user.id}`, user: account.user, expires_at: expiresAt }
 }
 
 export async function mockMe(): Promise<User> {

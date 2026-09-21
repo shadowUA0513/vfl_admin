@@ -1,0 +1,17 @@
+.root {
+  margin-block-end: 8px;
+}
+
+/* Pulled left so the arrow lines up with the page text rather than the
+   button's own padding, and up so it reads as a link above the header
+   instead of a separate row. */
+.back {
+  margin-inline-start: -12px;
+  margin-block-end: 10px;
+  color: var(--vfl-gray-muted);
+}
+
+.back:hover {
+  color: var(--vfl-red-bright);
+  background-color: transparent;
+}

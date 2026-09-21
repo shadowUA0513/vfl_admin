@@ -1,0 +1,156 @@
+.list {
+  border: 1px solid var(--vfl-border);
+  /* Not `overflow: hidden`: a row lifted for dragging needs its shadow to
+     show outside the panel. Rows are kept inside by the
+     restrictToParentElement modifier instead of by clipping. */
+  position: relative;
+}
+
+.empty {
+  padding: 22px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 14px;
+  border-block-end: 1px solid var(--vfl-border);
+  /* The travel itself is driven by the Web Animations API in the component;
+     this only covers the resting hover/flash states. */
+  transition: background-color var(--vfl-dur-hover) var(--vfl-ease);
+  position: relative;
+  background-color: var(--vfl-card);
+}
+
+.row:last-child {
+  border-block-end: none;
+}
+
+.row:hover {
+  background-color: var(--vfl-hover-wash);
+}
+
+/* ---- Drag handle ---------------------------------------------------- */
+.handle {
+  flex: none;
+  color: var(--vfl-gray-muted);
+  cursor: grab;
+  /* Stops the browser claiming the vertical gesture as a page scroll, which
+     is what makes dragging work on touch at all. */
+  touch-action: none;
+}
+
+.handle:hover {
+  color: var(--vfl-white-soft);
+  background-color: transparent;
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+/* The row being carried. Lifted off the list with a border and a shadow —
+   the one place the design system's no-shadow rule is relaxed, because
+   depth is the whole point of a drag state. */
+.row[data-dragging] {
+  background-color: var(--vfl-bg-soft);
+  border: 1px solid var(--vfl-red-border);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  cursor: grabbing;
+}
+
+.row[data-dragging] .handle {
+  color: var(--vfl-red-bright);
+}
+
+/* Marks the row that just moved. When two rows swap, both are travelling —
+   this is what says which one you actually acted on. */
+.row[data-moved] {
+  animation: moved-flash 700ms var(--vfl-ease);
+}
+
+.row[data-moved]::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: 2px;
+  background-color: var(--vfl-red);
+  animation: accent-in 700ms var(--vfl-ease);
+}
+
+/* Tinted with the bright red rather than the primary: at low opacity over
+   a near-black row, #CB0106 turns brown. #F0171D stays red. */
+@keyframes moved-flash {
+  0% {
+    background-color: rgba(240, 23, 29, 0.14);
+  }
+  100% {
+    background-color: var(--vfl-card);
+  }
+}
+
+@keyframes accent-in {
+  0% {
+    transform: scaleY(0);
+    opacity: 1;
+  }
+  45% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 0;
+  }
+}
+
+.rank {
+  inline-size: 34px;
+  flex: none;
+  font-size: 22px;
+  text-align: right;
+  color: var(--vfl-gray);
+  /* Re-keyed per number in the component, so this replays whenever a row's
+     rank changes rather than only on mount. */
+  animation: rank-change 320ms var(--vfl-ease);
+}
+
+@keyframes rank-change {
+  0% {
+    opacity: 0;
+    transform: scale(0.82);
+    color: var(--vfl-red-bright);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    color: var(--vfl-gray);
+  }
+}
+
+.name {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.remove:hover {
+  color: var(--vfl-red-bright);
+}
+
+.picker {
+  flex: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row[data-moved],
+  .row[data-moved]::before,
+  .rank {
+    animation: none;
+  }
+
+  .row[data-dragging] {
+    box-shadow: none;
+  }
+}

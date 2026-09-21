@@ -1,0 +1,25 @@
+/* Horizontal scroll is confined to the table so the page itself never
+   scrolls sideways on narrow screens. */
+.scroll {
+  overflow-x: auto;
+}
+
+.empty {
+  text-align: left;
+}
+
+.emptyTitle {
+  font-size: 30px;
+  line-height: 0.9;
+}
+
+.removeButton:hover:not(:disabled) {
+  color: var(--vfl-red-bright);
+}
+
+/* Row being deleted fades rather than disappearing, so the list doesn't
+   jump before the server confirms. */
+tr[data-removing] {
+  opacity: 0.4;
+  pointer-events: none;
+}

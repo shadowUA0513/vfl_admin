@@ -1,5 +1,6 @@
 import { Box, Text } from '@mantine/core'
 import { LoginForm } from '@/features/auth'
+import { ThemeToggle } from '@/shared/ui'
 import classes from './LoginPage.module.css'
 
 /** Composition only: the brand stage plus the auth feature's form. */
@@ -26,8 +27,12 @@ export function LoginPage() {
         </Box>
       </Box>
 
-      {/* Right: the form. */}
+      {/* Right: the form. The toggle lives here so the scheme can be changed
+          before signing in, not just from inside the admin. */}
       <Box className={classes.formSide}>
+        <Box className={classes.toggleSlot}>
+          <ThemeToggle />
+        </Box>
         <Box className={`${classes.formInner} vfl-enter`}>
           <Text className="vfl-label" mb={12}>
             Staff Access

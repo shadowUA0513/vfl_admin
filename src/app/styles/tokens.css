@@ -13,7 +13,10 @@
   /* ---- Brand ------------------------------------------------------- */
   --vfl-red: #cb0106;
   --vfl-red-bright: #f0171d;
-  --vfl-red-dim: #7d0104;
+  /* The deep end of the ramp. #7D0104 was near-black and read as dried
+     blood rather than as the brand red; lifting it and letting a little
+     blue back in keeps it dark without going muddy. */
+  --vfl-red-dim: #9e1218;
 
   /* ---- Text -------------------------------------------------------- */
   --vfl-white: #ffffff;
@@ -24,8 +27,17 @@
   /* ---- Lines ------------------------------------------------------- */
   --vfl-border: rgba(255, 255, 255, 0.12);
   --vfl-border-strong: rgba(255, 255, 255, 0.22);
-  --vfl-red-border: rgba(203, 1, 6, 0.45);
+  /* Built from the bright red: a translucent line made from #CB0106 over
+     near-black composites to brown rather than red. */
+  --vfl-red-border: rgba(240, 23, 29, 0.42);
   --vfl-accent-height: 2px;
+
+  /* ---- Washes ------------------------------------------------------ */
+  /* Tinted overlays that have to flip with the scheme: a white wash on a
+     light background is invisible. */
+  --vfl-hover-wash: rgba(255, 255, 255, 0.03);
+  --vfl-track: rgba(255, 255, 255, 0.08);
+  --vfl-scrollbar: #2a2426;
 
   /* ---- Type -------------------------------------------------------- */
   --vfl-font-display: 'Bebas Neue', 'Oswald', 'Barlow Condensed', sans-serif;
@@ -79,4 +91,47 @@
     --vfl-dur-hover: 1ms;
     --vfl-lift: 0px;
   }
+}
+
+/* ==================================================================== */
+/* Light scheme                                                         */
+/* ==================================================================== */
+/* Mantine writes data-mantine-color-scheme on <html>, so the same token
+   names are simply redefined here and every component follows.
+
+   The brand is black + red + white, so light mode is the same system
+   inverted rather than a different one: paper-white surfaces, near-black
+   text, the identical red. Red shifts from #F0171D to #CB0106 as the
+   accent — the bright red vibrates against white, the primary does not. */
+[data-mantine-color-scheme='light'] {
+  /* ---- Surfaces ---------------------------------------------------- */
+  --vfl-bg: #ffffff;
+  --vfl-bg-soft: #f4f2f2;
+  --vfl-card: #ffffff;
+  --vfl-card-translucent: rgba(255, 255, 255, 0.92);
+
+  /* ---- Brand ------------------------------------------------------- */
+  /* Swapped, not recoloured: the darker red becomes the hover state so
+     contrast still increases on interaction. #A50105 was doing this job
+     before and turned brown against white — #B3121A holds the same
+     contrast while still reading as red. */
+  --vfl-red: #cb0106;
+  --vfl-red-bright: #b3121a;
+  --vfl-red-dim: #f0171d;
+
+  /* ---- Text -------------------------------------------------------- */
+  --vfl-white: #080606;
+  --vfl-white-soft: #1a1616;
+  --vfl-gray: #55504f;
+  --vfl-gray-muted: #7c7675;
+
+  /* ---- Lines ------------------------------------------------------- */
+  --vfl-border: rgba(0, 0, 0, 0.14);
+  --vfl-border-strong: rgba(0, 0, 0, 0.26);
+  --vfl-red-border: rgba(203, 1, 6, 0.4);
+
+  /* ---- Washes ------------------------------------------------------ */
+  --vfl-hover-wash: rgba(0, 0, 0, 0.04);
+  --vfl-track: rgba(0, 0, 0, 0.1);
+  --vfl-scrollbar: #c4bdbd;
 }

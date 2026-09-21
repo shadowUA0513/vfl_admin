@@ -55,20 +55,31 @@ const vflRed: MantineColorsTuple = [
   '#520002',
 ]
 
+/* Both schemes point Mantine's own variables at the VFL tokens, which are
+   themselves redefined per scheme in app/styles/tokens.css. That keeps one
+   source of truth: change a token, both Mantine and the hand-written CSS
+   follow. */
+const MANTINE_VARS = {
+  '--mantine-color-body': 'var(--vfl-bg)',
+  '--mantine-color-text': 'var(--vfl-white-soft)',
+  '--mantine-color-dimmed': 'var(--vfl-gray-muted)',
+  '--mantine-color-default': 'var(--vfl-card)',
+  '--mantine-color-default-border': 'var(--vfl-border)',
+  '--mantine-color-default-color': 'var(--vfl-white-soft)',
+  '--mantine-color-placeholder': 'var(--vfl-gray-muted)',
+  '--mantine-color-anchor': 'var(--vfl-red-bright)',
+  '--mantine-color-error': 'var(--vfl-red-bright)',
+}
+
 export const cssVariablesResolver: CSSVariablesResolver = () => ({
   variables: {},
-  light: {},
+  light: {
+    ...MANTINE_VARS,
+    '--mantine-color-default-hover': 'var(--vfl-bg-soft)',
+  },
   dark: {
-    '--mantine-color-body': 'var(--vfl-bg)',
-    '--mantine-color-text': 'var(--vfl-white-soft)',
-    '--mantine-color-dimmed': 'var(--vfl-gray-muted)',
-    '--mantine-color-default': 'var(--vfl-card)',
+    ...MANTINE_VARS,
     '--mantine-color-default-hover': '#161012',
-    '--mantine-color-default-border': 'var(--vfl-border)',
-    '--mantine-color-default-color': 'var(--vfl-white-soft)',
-    '--mantine-color-placeholder': 'var(--vfl-gray-muted)',
-    '--mantine-color-anchor': 'var(--vfl-red-bright)',
-    '--mantine-color-error': 'var(--vfl-red-bright)',
   },
 })
 

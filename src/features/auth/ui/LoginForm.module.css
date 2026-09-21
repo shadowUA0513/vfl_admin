@@ -1,6 +1,6 @@
 .alert {
   border-color: var(--vfl-red-border);
-  background-color: rgba(203, 1, 6, 0.08);
+  background-color: rgba(240, 23, 29, 0.08);
   color: var(--vfl-white-soft);
 }
 
@@ -8,4 +8,12 @@
   margin-block-start: 40px;
   padding-block-start: 24px;
   border-block-start: 1px solid var(--vfl-border);
+}
+
+/* Neutral, not red: an expired session is routine, not an error the user
+   did something to cause. */
+.notice {
+  border-color: var(--vfl-border-strong);
+  background-color: transparent;
+  color: var(--vfl-gray);
 }

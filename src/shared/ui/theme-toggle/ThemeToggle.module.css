@@ -1,0 +1,26 @@
+/* Round icon button. No red anywhere in this control, in any state — hover
+   and active shift brightness only.
+
+   The radius is set here rather than via the `radius` prop because the theme
+   squares every radius off (xl is 2px), so there is no theme value that
+   would round this. It is the one intentionally circular control. */
+.toggle {
+  background-color: var(--vfl-bg-soft);
+  border: 1px solid var(--vfl-border);
+  border-radius: 50%;
+  color: var(--vfl-gray);
+  transition:
+    background-color var(--vfl-dur-hover) var(--vfl-ease),
+    border-color var(--vfl-dur-hover) var(--vfl-ease),
+    color var(--vfl-dur-hover) var(--vfl-ease);
+}
+
+.toggle:hover {
+  background-color: var(--vfl-card);
+  border-color: var(--vfl-border-strong);
+  color: var(--vfl-white);
+}
+
+.toggle:active {
+  transform: none;
+}

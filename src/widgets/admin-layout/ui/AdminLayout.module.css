@@ -36,6 +36,9 @@
 
 .drawerBody {
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  block-size: 100%;
 }
 
 /* ---- Brand ---------------------------------------------------------- */
@@ -99,7 +102,7 @@
 
 .navLink:hover {
   color: var(--vfl-white-soft);
-  background-color: rgba(255, 255, 255, 0.03);
+  background-color: var(--vfl-hover-wash);
 }
 
 .navLinkActive,
@@ -145,9 +148,22 @@
   }
 }
 
-.menuHead {
-  padding: 14px 14px 12px;
-  border-block-end: 1px solid var(--vfl-border);
+/* ---- Sidebar footer -------------------------------------------------- */
+/* `margin-block-start: auto` is what pins this to the bottom: the sidebar
+   and the drawer body are both full-height flex columns, so the footer
+   takes the slack left by the nav. */
+.sidebarFooter {
+  margin-block-start: auto;
+  padding: 20px 24px;
+  border-block-start: 1px solid var(--vfl-border);
+}
+
+.account {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-block-end: 14px;
+  min-inline-size: 0;
 }
 
 .content {

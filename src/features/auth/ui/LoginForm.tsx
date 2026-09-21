@@ -2,7 +2,7 @@ import { Alert, Box, Button, PasswordInput, Stack, Text, TextInput } from '@mant
 import { useForm } from '@mantine/form'
 import { apiErrorMessage } from '@/shared/api'
 import { USING_MOCK_API } from '@/shared/config/env'
-import { MOCK_HINTS } from '@/entities/session'
+import { MOCK_HINTS, useSessionStore } from '@/entities/session'
 import type { Credentials } from '@/entities/session'
 import { useLogin } from '../model/useLogin'
 import classes from './LoginForm.module.css'
@@ -13,6 +13,12 @@ import classes from './LoginForm.module.css'
  */
 export function LoginForm() {
   const mutation = useLogin()
+
+  /* Set when the session ended on its own. Suppressed once a login attempt
+     has produced its own error, so the user isn't shown two conflicting
+     explanations at once. */
+  const expired = useSessionStore((state) => state.expired)
+  const showExpiredNotice = expired && !mutation.isError && !mutation.isPending
 
   const form = useForm<Credentials>({
     initialValues: { email: '', password: '' },
@@ -33,6 +39,12 @@ export function LoginForm() {
     <>
       <form onSubmit={form.onSubmit((values) => mutation.mutate(values))} noValidate>
         <Stack gap={22}>
+          {showExpiredNotice && (
+            <Alert variant="outline" color="gray" radius={0} classNames={{ root: classes.notice }}>
+              Your session expired. Please sign in again.
+            </Alert>
+          )}
+
           {mutation.isError && (
             <Alert variant="outline" color="vflRed" radius={0} classNames={{ root: classes.alert }}>
               {apiErrorMessage(mutation.error, 'Unable to sign in.')}

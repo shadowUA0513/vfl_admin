@@ -38,7 +38,7 @@ body {
    artifact against #050505. */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #2a2426 transparent;
+  scrollbar-color: var(--vfl-scrollbar) transparent;
 }
 
 *::-webkit-scrollbar {
@@ -51,7 +51,7 @@ body {
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: #2a2426;
+  background-color: var(--vfl-scrollbar);
   border-radius: 0;
 }
 

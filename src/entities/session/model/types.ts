@@ -5,7 +5,9 @@ export interface Credentials {
   password: string
 }
 
+/** Mirrors dto.LoginResponse. */
 export interface LoginResponse {
   token: string
+  expires_at?: string
   user: User
 }

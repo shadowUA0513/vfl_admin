@@ -1,8 +1,9 @@
 import {
   IconCalendarEvent,
   IconLayoutDashboard,
-  IconPalette,
+  IconTrophy,
   IconUsers,
+  IconWeight,
 } from '@tabler/icons-react'
 import type { Role } from '@/entities/user'
 
@@ -16,7 +17,8 @@ export interface NavItem {
 
 export const NAV_ITEMS: NavItem[] = [
   { to: '/dashboard', label: 'Dashboard', icon: IconLayoutDashboard },
+  { to: '/athletes', label: 'Athletes', icon: IconUsers, minimumRole: 'editor' },
   { to: '/events', label: 'Events', icon: IconCalendarEvent, minimumRole: 'editor' },
-  { to: '/fighters', label: 'Fighters', icon: IconUsers, minimumRole: 'editor' },
-  { to: '/design-system', label: 'Design System', icon: IconPalette },
+  { to: '/rankings', label: 'Rankings', icon: IconTrophy, minimumRole: 'editor' },
+  { to: '/divisions', label: 'Divisions', icon: IconWeight, minimumRole: 'editor' },
 ]

@@ -8,7 +8,11 @@ import { queryClient } from './queryClient'
 /** Every cross-cutting provider, in one place, outermost first. */
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
-    <MantineProvider theme={theme} cssVariablesResolver={cssVariablesResolver} forceColorScheme="dark">
+    <MantineProvider
+      theme={theme}
+      cssVariablesResolver={cssVariablesResolver}
+      defaultColorScheme="dark"
+    >
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>{children}</BrowserRouter>
       </QueryClientProvider>

@@ -4,13 +4,21 @@ import type { Role, User } from '../model/types'
    and anything at or above that rank passes, so guards don't have to list
    every role explicitly. */
 const RANK: Record<Role, number> = {
-  viewer: 0,
-  editor: 1,
-  admin: 2,
-  superadmin: 3,
+  editor: 0,
+  super_admin: 1,
 }
 
 export function hasRole(user: User | null, minimum: Role): boolean {
   if (!user) return false
-  return RANK[user.role] >= RANK[minimum]
+  /* An unknown role from the server ranks below everything, so a new role
+     added API-side cannot silently inherit admin access here. */
+  const rank = RANK[user.role] ?? -1
+  return rank >= RANK[minimum]
+}
+
+/** Human-readable role for display. */
+export function roleLabel(role: Role | undefined): string {
+  if (role === 'super_admin') return 'Super Admin'
+  if (role === 'editor') return 'Editor'
+  return 'Unknown'
 }

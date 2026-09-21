@@ -1,0 +1,18 @@
+.root {
+  inline-size: 100%;
+}
+
+.alert {
+  border-color: var(--vfl-red-border);
+  background-color: rgba(240, 23, 29, 0.08);
+  color: var(--vfl-white-soft);
+}
+
+.loading {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.actions {
+  border-block-start: 1px solid var(--vfl-border);
+}
