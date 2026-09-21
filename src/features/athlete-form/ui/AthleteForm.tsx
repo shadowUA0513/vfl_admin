@@ -10,7 +10,7 @@ import {
   type AthleteInput,
 } from '@/entities/athlete'
 import { divisionQueries } from '@/entities/division'
-import { FormShell, ImageUpload } from '@/shared/ui'
+import { FormShell } from '@/shared/ui'
 
 interface AthleteFormProps {
   initialValues?: AthleteInput
@@ -36,9 +36,6 @@ const EMPTY: AthleteInput = {
   reach_cm: undefined,
   leg_reach_cm: undefined,
   stance: '',
-  photo_url: undefined,
-  photo_thumbnail_url: undefined,
-  photo_large_url: undefined,
 }
 
 function SectionLabel({ children }: { children: string }) {
@@ -194,37 +191,6 @@ export function AthleteForm({
           clearable
           {...form.getInputProps('stance')}
         />
-
-        <Box mt={14}>
-          <Divider mb={22} />
-          <SectionLabel>Photos</SectionLabel>
-        </Box>
-
-        {/* Three independent slots: the API stores three URLs and does not
-            derive sizes, so each is uploaded on its own. */}
-        <SimpleGrid cols={{ base: 1, xs: 3 }} spacing={18}>
-          <ImageUpload
-            label="Main"
-            folder="athlete-photos"
-            description="Profile photo"
-            value={form.values.photo_url}
-            onChange={(url) => form.setFieldValue('photo_url', url)}
-          />
-          <ImageUpload
-            label="Thumbnail"
-            folder="athlete-photos"
-            description="Lists and cards"
-            value={form.values.photo_thumbnail_url}
-            onChange={(url) => form.setFieldValue('photo_thumbnail_url', url)}
-          />
-          <ImageUpload
-            label="Large"
-            folder="athlete-photos"
-            description="Hero / full bleed"
-            value={form.values.photo_large_url}
-            onChange={(url) => form.setFieldValue('photo_large_url', url)}
-          />
-        </SimpleGrid>
       </Stack>
     </FormShell>
   )

@@ -1,16 +1,11 @@
-import { Button, Stack, Text } from '@mantine/core'
+import { Button, Paper, SimpleGrid, Skeleton, Stack, Text } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
-import { athleteName, athleteQueries, formatRecord, type Athlete } from '@/entities/athlete'
+import { AthleteCard, athleteName, athleteQueries, type Athlete } from '@/entities/athlete'
 import { divisionQueries } from '@/entities/division'
-import { ConfirmDialog, DataTable, PageHeader, type Column } from '@/shared/ui'
-
-function statusColor(status: Athlete['status']) {
-  if (status === 'active') return 'var(--vfl-white-soft)'
-  if (status === 'retired') return 'var(--vfl-red-bright)'
-  return 'var(--vfl-gray-muted)'
-}
+import { ConfirmDialog, PageHeader } from '@/shared/ui'
+import classes from './AthletesListPage.module.css'
 
 export function AthletesListPage() {
   const navigate = useNavigate()
@@ -18,55 +13,11 @@ export function AthletesListPage() {
   const remove = athleteQueries.useRemove()
 
   /* Athletes carry division_id, not a division name, so the divisions list
-     is fetched alongside to label the column. */
+     is fetched alongside to label each card. */
   const { data: divisions } = divisionQueries.useList()
-  const divisionName = (id: string | undefined) =>
-    divisions?.find((division) => division.id === id)?.name ?? '—'
+  const divisionById = new Map((divisions ?? []).map((division) => [division.id, division]))
 
   const [pendingRemoval, setPendingRemoval] = useState<Athlete | null>(null)
-
-  const columns: Array<Column<Athlete>> = [
-    {
-      key: 'name',
-      header: 'Athlete',
-      render: (athlete) => (
-        <div>
-          <Text fz={14} c="var(--vfl-white)">
-            {athleteName(athlete)}
-          </Text>
-          {athlete.nickname && (
-            <Text fz={12} c="var(--vfl-gray-muted)">
-              &ldquo;{athlete.nickname}&rdquo;
-            </Text>
-          )}
-        </div>
-      ),
-    },
-    {
-      key: 'division',
-      header: 'Division',
-      render: (athlete) => divisionName(athlete.division_id),
-    },
-    { key: 'country', header: 'Country', render: (athlete) => athlete.country || '—' },
-    {
-      key: 'record',
-      header: 'Record',
-      render: (athlete) => (
-        <Text className="vfl-numeric" fz={14}>
-          {formatRecord(athlete)}
-        </Text>
-      ),
-    },
-    {
-      key: 'status',
-      header: 'Status',
-      render: (athlete) => (
-        <Text className="vfl-label" c={statusColor(athlete.status)}>
-          {athlete.status ?? '—'}
-        </Text>
-      ),
-    },
-  ]
 
   const createButton = (
     <Button leftSection={<IconPlus size={16} />} onClick={() => navigate('/athletes/new')}>
@@ -78,19 +29,54 @@ export function AthletesListPage() {
     <Stack gap={36}>
       <PageHeader title="Athletes" action={createButton} />
 
-      <DataTable
-        columns={columns}
-        rows={data}
-        isLoading={isLoading}
-        error={error}
-        errorMessage="Could not load athletes."
-        emptyTitle="No Athletes"
-        emptyBody="Add the first athlete to start building the roster."
-        emptyAction={createButton}
-        onEdit={(athlete) => navigate(`/athletes/${athlete.id}/edit`)}
-        onRemove={setPendingRemoval}
-        removingId={remove.isPending ? pendingRemoval?.id : null}
-      />
+      {isLoading && (
+        /* Card-shaped skeletons so the layout does not jump when data lands. */
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing={20}>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Skeleton key={index} height={320} radius={0} />
+          ))}
+        </SimpleGrid>
+      )}
+
+      {Boolean(error) && !isLoading && (
+        <Paper data-accent p="var(--vfl-pad-panel)">
+          <Text className="vfl-label" c="var(--vfl-red-bright)" mb={10}>
+            Error
+          </Text>
+          <Text c="var(--vfl-gray)" fz={14}>
+            Could not load athletes.
+          </Text>
+        </Paper>
+      )}
+
+      {!isLoading && !error && data?.length === 0 && (
+        <Paper p="var(--vfl-pad-panel-lg)">
+          <Text className={`vfl-display ${classes.emptyTitle}`}>No Athletes</Text>
+          <Text c="var(--vfl-gray)" fz={14} mt={12} mb={28}>
+            Add the first athlete to start building the roster.
+          </Text>
+          {createButton}
+        </Paper>
+      )}
+
+      {!isLoading && !error && data && data.length > 0 && (
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing={20}>
+          {data.map((athlete) => {
+            const division = athlete.division_id ? divisionById.get(athlete.division_id) : undefined
+            return (
+              <AthleteCard
+                key={athlete.id}
+                athlete={athlete}
+                divisionName={division?.name}
+                weightLimitLbs={division?.weight_limit_lbs}
+                onEdit={() => navigate(`/athletes/${athlete.id}/edit`)}
+                onRemove={() => setPendingRemoval(athlete)}
+                removing={remove.isPending && pendingRemoval?.id === athlete.id}
+              />
+            )
+          })}
+        </SimpleGrid>
+      )}
 
       <ConfirmDialog
         opened={pendingRemoval !== null}

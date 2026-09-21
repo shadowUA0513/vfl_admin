@@ -1,0 +1,150 @@
+/* A real card: image on top with the name over it, a compact metadata
+   strip underneath. Laid out in a grid by the page, so the card fills its
+   column instead of stretching content across dead space. */
+.card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--vfl-border);
+  background-color: var(--vfl-card);
+  overflow: hidden;
+  transition:
+    border-color var(--vfl-dur-hover) var(--vfl-ease),
+    transform var(--vfl-dur-hover) var(--vfl-ease);
+}
+
+.card:hover {
+  border-color: var(--vfl-red-border);
+  transform: translateY(var(--vfl-lift));
+}
+
+.card[data-removing] {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ---- Image ---------------------------------------------------------- */
+.media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  /* A faint red floor so an empty or letterboxed slot still reads as part
+     of the brand rather than a hole in the card. */
+  background:
+    radial-gradient(90% 70% at 50% 100%, rgba(240, 23, 29, 0.12) 0%, transparent 70%),
+    var(--vfl-bg-soft);
+}
+
+.photo {
+  inline-size: 100%;
+  block-size: 100%;
+  /* `contain`, not `cover`: uploads are cut-outs and full-body shots as
+     often as headshots, and cover would crop faces off. */
+  object-fit: contain;
+  object-position: bottom center;
+  display: block;
+}
+
+.initials {
+  font-size: clamp(56px, 7vw, 82px);
+  line-height: 1;
+  color: var(--vfl-border-strong);
+  margin-block: auto;
+  letter-spacing: 0.04em;
+  user-select: none;
+}
+
+/* ---- Name over the image -------------------------------------------- */
+.nameplate {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  padding: 26px 20px 16px;
+  background: linear-gradient(180deg, transparent 0%, rgba(13, 9, 10, 0.92) 62%);
+  pointer-events: none;
+}
+
+.nickname {
+  display: block;
+  color: var(--vfl-gray);
+  margin-block-end: 5px;
+}
+
+.name {
+  font-size: clamp(22px, 2vw, 28px);
+  line-height: 0.92;
+  color: var(--vfl-white);
+}
+
+/* ---- Actions --------------------------------------------------------- */
+.actions {
+  position: absolute;
+  inset-block-start: 10px;
+  inset-inline-end: 10px;
+  display: flex;
+  gap: 4px;
+  z-index: 1;
+}
+
+/* Solid chips, not ghost buttons: these sit on an arbitrary photograph and
+   a transparent icon can land on a light patch and vanish. */
+.action {
+  background-color: rgba(5, 5, 5, 0.72);
+  color: var(--vfl-white-soft);
+  border: 1px solid var(--vfl-border);
+}
+
+.action:hover:not(:disabled) {
+  background-color: var(--vfl-bg);
+  color: var(--vfl-white);
+}
+
+.remove:hover:not(:disabled) {
+  background-color: var(--vfl-red);
+  border-color: var(--vfl-red);
+  color: #ffffff;
+}
+
+/* ---- Metadata strip --------------------------------------------------- */
+.meta {
+  padding: 16px 20px 18px;
+  border-block-start: 1px solid var(--vfl-border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.metaRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.weight {
+  font-size: 12px;
+  color: var(--vfl-gray-muted);
+  white-space: nowrap;
+}
+
+.record {
+  font-size: 16px;
+  color: var(--vfl-white);
+}
+
+.recordKey {
+  font-family: var(--vfl-font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: var(--vfl-tracking-label);
+  color: var(--vfl-gray-muted);
+  margin-inline-start: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card:hover {
+    transform: none;
+  }
+}

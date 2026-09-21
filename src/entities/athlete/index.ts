@@ -10,3 +10,4 @@ export {
   toAthleteInput,
 } from './model/types'
 export { athleteApi, athleteQueries } from './api/athleteApi'
+export { AthleteCard } from './ui/AthleteCard'
