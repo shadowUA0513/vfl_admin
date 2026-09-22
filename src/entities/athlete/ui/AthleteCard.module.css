@@ -5,7 +5,10 @@
   display: flex;
   flex-direction: column;
   border: 1px solid var(--vfl-border);
-  background-color: var(--vfl-card);
+  /* Matches the `bg` prop set on the <Paper> — kept here too so the CSS
+     stays accurate; see the comment on that prop for why it isn't
+     `--vfl-card` (same white as the page in light mode). */
+  background-color: var(--vfl-bg-soft);
   overflow: hidden;
   transition:
     border-color var(--vfl-dur-hover) var(--vfl-ease),
@@ -123,6 +126,18 @@
   gap: 14px;
 }
 
+/* The default UAX #14 line-breaking treats `-` as a break opportunity, so
+   without this a long country name or "W-L-D" wraps mid-word onto a second
+   line, and cards in the same row end up different heights. `min-width: 0`
+   is needed alongside `overflow: hidden` because flex items don't shrink
+   past their content size by default. */
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
 .weight {
   font-size: 12px;
   color: var(--vfl-gray-muted);
@@ -132,6 +147,7 @@
 .record {
   font-size: 16px;
   color: var(--vfl-white);
+  white-space: nowrap;
 }
 
 .recordKey {

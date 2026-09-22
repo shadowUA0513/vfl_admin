@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client'
    overrides in app/styles and the theme's CSS modules take precedence
    without needing raised specificity. */
 import '@mantine/core/styles.layer.css'
+import '@mantine/dates/styles.layer.css'
 import '@fontsource/bebas-neue/400.css'
 import '@fontsource/oswald/700.css'
 import '@fontsource-variable/inter'

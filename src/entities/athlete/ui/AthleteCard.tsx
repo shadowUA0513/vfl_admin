@@ -39,13 +39,20 @@ export function AthleteCard({
   removing,
 }: AthleteCardProps) {
   /* Prefer the main photo, fall back to the thumbnail — an athlete may have
-     had only one of the three set. There is currently no upload path wired
-     into the admin (see AthleteForm), so this stays populated only if a
-     photo URL was set some other way (directly against the API, etc). */
+     had only one of the three set via the upload slots on AthleteForm. */
   const photo = athlete.photo_url || athlete.photo_thumbnail_url
 
   return (
-    <Paper className={classes.card} data-removing={removing || undefined} p={0}>
+    <Paper
+      className={classes.card}
+      data-removing={removing || undefined}
+      p={0}
+      /* Overrides the theme's default `bg: var(--vfl-card)` — in light mode
+         that token is the same white as the page, so the card would have
+         no fill to distinguish it from the canvas behind it, leaving only
+         a faint 1px border to mark the edge. */
+      bg="var(--vfl-bg-soft)"
+    >
       <Box className={classes.media}>
         {photo ? (
           <img src={photo} alt={athleteName(athlete)} className={classes.photo} loading="lazy" />
@@ -99,7 +106,7 @@ export function AthleteCard({
 
       <Box className={classes.meta}>
         <Box className={classes.metaRow}>
-          <Text className="vfl-label" c="var(--vfl-gray)">
+          <Text className={`vfl-label ${classes.truncate}`} c="var(--vfl-gray)">
             {divisionName ?? 'No division'}
           </Text>
           <Text className={`vfl-numeric ${classes.weight}`}>
@@ -112,7 +119,7 @@ export function AthleteCard({
             {formatRecord(athlete)}
             <span className={classes.recordKey}>W-L-D</span>
           </Text>
-          <Text className="vfl-label" c={statusColor(athlete.status)}>
+          <Text className={`vfl-label ${classes.truncate}`} c={statusColor(athlete.status)}>
             {athlete.status ?? 'unknown'}
             {athlete.country ? ` · ${athlete.country}` : ''}
           </Text>
