@@ -18,6 +18,7 @@ export function AthleteEditPage() {
       <AthleteForm
         key={data?.id ?? 'loading'}
         initialValues={data ? toAthleteInput(data) : undefined}
+        athlete={data}
         loading={isLoading}
         saving={update.isPending}
         error={update.error ?? error}

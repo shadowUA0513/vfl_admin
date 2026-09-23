@@ -21,6 +21,7 @@ import {
   type CSSVariablesResolver,
   type MantineColorsTuple,
 } from '@mantine/core'
+import { DatePickerInput, DateTimePicker, TimePicker } from '@mantine/dates'
 import classes from './components.module.css'
 
 /* Mantine's `dark` tuple drives every surface it renders, so it is replaced
@@ -82,6 +83,16 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
     '--mantine-color-default-hover': '#161012',
   },
 })
+
+/* Shared by DatePickerInput and DateTimePicker — one calendar, styled once. */
+const CALENDAR_CLASSNAMES = {
+  day: classes.calendarDay,
+  weekday: classes.calendarWeekday,
+  calendarHeaderLevel: classes.calendarHeaderLevel,
+  calendarHeaderControl: classes.calendarHeaderControl,
+  monthsListControl: classes.pickerControl,
+  yearsListControl: classes.pickerControl,
+}
 
 export const theme = createTheme({
   colors: { dark, vflRed },
@@ -207,6 +218,33 @@ export const theme = createTheme({
 
     ScrollArea: ScrollArea.extend({
       defaultProps: { scrollbarSize: 8 },
+    }),
+
+    /* Both pickers share one calendar, so they share one set of class names.
+       The dropdown itself belongs to Popover, which is why it is reached
+       through popoverProps rather than through classNames. */
+    DatePickerInput: DatePickerInput.extend({
+      defaultProps: {
+        radius: 0,
+        popoverProps: { classNames: { dropdown: classes.pickerDropdown } },
+      },
+      classNames: CALENDAR_CLASSNAMES,
+    }),
+
+    DateTimePicker: DateTimePicker.extend({
+      defaultProps: {
+        radius: 0,
+        /* Portalled so the calendar is never clipped by a form panel's
+           overflow or stacked under the sticky form footer. */
+        popoverProps: { withinPortal: true, classNames: { dropdown: classes.pickerDropdown } },
+      },
+      classNames: CALENDAR_CLASSNAMES,
+    }),
+
+    /* Reached by the time half of DateTimePicker as well as on its own. */
+    TimePicker: TimePicker.extend({
+      defaultProps: { radius: 0 },
+      classNames: { dropdown: classes.timeDropdown, control: classes.timeControl },
     }),
   },
 })

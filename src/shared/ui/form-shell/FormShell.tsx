@@ -11,6 +11,10 @@ interface FormShellProps {
   loading?: boolean
   saving?: boolean
   error?: unknown
+  /* Most forms are a single column of fields and read best narrow. The
+     event form is the exception: its fight card puts two fighter pickers
+     side by side, which needs the room. */
+  maw?: number | string
   children: ReactNode
 }
 
@@ -22,10 +26,11 @@ export function FormShell({
   loading,
   saving,
   error,
+  maw = 680,
   children,
 }: FormShellProps) {
   return (
-    <Paper data-accent p="var(--vfl-pad-panel-lg)" maw={680} className={classes.root}>
+    <Paper data-accent p="var(--vfl-pad-panel-lg)" maw={maw} className={classes.root}>
       <form onSubmit={onSubmit} noValidate>
         {Boolean(error) && (
           <Alert variant="outline" color="vflRed" radius={0} mb={28} classNames={{ root: classes.alert }}>

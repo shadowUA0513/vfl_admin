@@ -12,4 +12,5 @@ export {
   formatRank,
   toRankingSnapshotInput,
 } from './model/types'
+export { RankingCard } from './ui/RankingCard'
 export { rankingApi, rankingQueries, usePublishRanking } from './api/rankingApi'

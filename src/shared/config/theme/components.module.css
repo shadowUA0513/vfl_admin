@@ -262,3 +262,98 @@
   text-decoration: none;
   border-block-end-color: var(--vfl-red-bright);
 }
+
+/* ---- Date pickers --------------------------------------------------- */
+/* The native `datetime-local` control is drawn by the browser and ignores
+   every token above, so the admin uses Mantine's pickers. These rules give
+   the calendar the same square, uppercase, red-accented treatment as the
+   rest of the chrome. */
+.pickerDropdown {
+  background-color: var(--vfl-card);
+  border: 1px solid var(--vfl-border);
+  border-block-start: var(--vfl-accent-height) solid var(--vfl-red);
+  border-radius: 0;
+  padding: 16px;
+}
+
+.calendarHeaderLevel {
+  font-family: var(--vfl-font-display);
+  font-size: 19px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--vfl-white);
+  border-radius: 0;
+}
+
+.calendarHeaderControl {
+  border-radius: 0;
+  color: var(--vfl-gray);
+}
+
+.calendarHeaderControl:hover {
+  background-color: var(--vfl-hover-wash);
+  color: var(--vfl-red-bright);
+}
+
+.calendarWeekday {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: var(--vfl-tracking-label);
+  text-transform: uppercase;
+  color: var(--vfl-gray-muted);
+  padding-block-end: 10px;
+}
+
+.calendarDay {
+  border-radius: 0;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  transition: background-color var(--vfl-dur-hover) var(--vfl-ease);
+}
+
+.calendarDay:hover:not([data-selected]):not(:disabled) {
+  background-color: var(--vfl-bg-soft);
+  color: var(--vfl-red-bright);
+}
+
+/* Today reads as an outline, not a fill — the fill is reserved for the
+   selected day so the two never compete. */
+.calendarDay[data-today]:not([data-selected]) {
+  box-shadow: inset 0 -2px 0 var(--vfl-red-border);
+}
+
+.calendarDay[data-selected] {
+  background-color: var(--vfl-red);
+  color: #ffffff;
+}
+
+/* Month / year grids use the same square cells. */
+.pickerControl {
+  border-radius: 0;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pickerControl[data-selected] {
+  background-color: var(--vfl-red);
+  color: #ffffff;
+}
+
+/* ---- Time picker ---------------------------------------------------- */
+.timeDropdown {
+  background-color: var(--vfl-card);
+  border: 1px solid var(--vfl-border);
+  border-radius: 0;
+}
+
+.timeControl {
+  border-radius: 0;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+}
+
+.timeControl[data-active] {
+  background-color: var(--vfl-red);
+  color: #ffffff;
+}

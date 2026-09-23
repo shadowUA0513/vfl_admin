@@ -7,14 +7,21 @@ import {
   ATHLETE_STATUSES,
   dateInputToIso,
   isoToDateInput,
+  normalizeCareerStats,
   optionalNumber,
+  type Athlete,
   type AthleteInput,
+  type CareerStats,
 } from '@/entities/athlete'
 import { divisionQueries } from '@/entities/division'
 import { FormShell, ImageUpload } from '@/shared/ui'
+import { RecordReadout } from './RecordReadout'
 
 interface AthleteFormProps {
   initialValues?: AthleteInput
+  /* The fetched record, for the read-only W-L-D panel. Absent on create —
+     a fighter with no bouts has no record to show. */
+  athlete?: Athlete
   /** Absent while an edit page is still fetching the record. */
   loading?: boolean
   saving?: boolean
@@ -40,7 +47,57 @@ const EMPTY: AthleteInput = {
   photo_url: undefined,
   photo_thumbnail_url: undefined,
   photo_large_url: undefined,
+  career_stats: {},
 }
+
+/* The 12 writable stats, in the order they are read on a fighter profile:
+   striking volume, then accuracy, then the grappling equivalents.
+   `percent` fields are 0-100; the rest are counts or per-minute rates. */
+const CAREER_STAT_FIELDS: Array<{
+  key: keyof CareerStats
+  label: string
+  placeholder: string
+  percent?: boolean
+  decimals?: number
+  max?: number
+}> = [
+  { key: 'sig_strikes_landed', label: 'Sig. Strikes Landed', placeholder: '1463' },
+  { key: 'sig_strikes_attempted', label: 'Sig. Strikes Attempted', placeholder: '2790' },
+  { key: 'striking_accuracy', label: 'Striking Accuracy', placeholder: '52.4', percent: true },
+  { key: 'striking_defense', label: 'Striking Defense', placeholder: '64.1', percent: true },
+  {
+    key: 'strikes_landed_per_min',
+    label: 'Strikes Landed / Min',
+    placeholder: '4.29',
+    decimals: 2,
+    max: 50,
+  },
+  {
+    key: 'strikes_absorbed_per_min',
+    label: 'Strikes Absorbed / Min',
+    placeholder: '2.22',
+    decimals: 2,
+    max: 50,
+  },
+  { key: 'takedowns_landed', label: 'Takedowns Landed', placeholder: '36' },
+  { key: 'takedowns_attempted', label: 'Takedowns Attempted', placeholder: '82' },
+  { key: 'takedown_accuracy', label: 'Takedown Accuracy', placeholder: '43.9', percent: true },
+  { key: 'takedown_defense', label: 'Takedown Defense', placeholder: '95.0', percent: true },
+  {
+    key: 'takedown_avg_per_15_min',
+    label: 'Takedowns / 15 Min',
+    placeholder: '1.91',
+    decimals: 2,
+    max: 50,
+  },
+  {
+    key: 'submission_avg_per_15_min',
+    label: 'Submissions / 15 Min',
+    placeholder: '0.44',
+    decimals: 2,
+    max: 50,
+  },
+]
 
 function SectionLabel({ children }: { children: string }) {
   return (
@@ -52,6 +109,7 @@ function SectionLabel({ children }: { children: string }) {
 
 export function AthleteForm({
   initialValues,
+  athlete,
   loading,
   saving,
   error,
@@ -67,7 +125,11 @@ export function AthleteForm({
   const form = useForm<AthleteInput>({
     /* date_of_birth arrives as RFC3339 and the input needs YYYY-MM-DD. */
     initialValues: initialValues
-      ? { ...initialValues, date_of_birth: isoToDateInput(initialValues.date_of_birth) }
+      ? {
+          ...initialValues,
+          date_of_birth: isoToDateInput(initialValues.date_of_birth),
+          career_stats: initialValues.career_stats ?? {},
+        }
       : EMPTY,
     validate: {
       first_name: (value) => (value.trim() ? null : 'First name is required'),
@@ -92,6 +154,7 @@ export function AthleteForm({
           weight_kg: optionalNumber(values.weight_kg),
           reach_cm: optionalNumber(values.reach_cm),
           leg_reach_cm: optionalNumber(values.leg_reach_cm),
+          career_stats: normalizeCareerStats(values.career_stats),
         }),
       )}
       onCancel={() => navigate('/athletes')}
@@ -203,6 +266,35 @@ export function AthleteForm({
           clearable
           {...form.getInputProps('stance')}
         />
+
+        <Box mt={14}>
+          <Divider mb={22} />
+          <SectionLabel>Record</SectionLabel>
+        </Box>
+
+        <RecordReadout athlete={athlete} />
+
+        <Box mt={14}>
+          <Divider mb={22} />
+          <SectionLabel>Career Stats</SectionLabel>
+        </Box>
+
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing={22}>
+          {CAREER_STAT_FIELDS.map((stat) => (
+            <NumberInput
+              key={stat.key}
+              label={stat.label}
+              placeholder={stat.placeholder}
+              min={0}
+              max={stat.percent ? 100 : (stat.max ?? 100000)}
+              decimalScale={stat.percent ? 1 : (stat.decimals ?? 0)}
+              /* Counts are whole: a fighter cannot land 36.5 takedowns. */
+              allowDecimal={Boolean(stat.percent || stat.decimals)}
+              suffix={stat.percent ? '%' : undefined}
+              {...form.getInputProps(`career_stats.${stat.key}`)}
+            />
+          ))}
+        </SimpleGrid>
 
         <Box mt={14}>
           <Divider mb={22} />

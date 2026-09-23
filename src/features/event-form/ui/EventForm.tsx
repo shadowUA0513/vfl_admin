@@ -1,6 +1,9 @@
 import { Box, Divider, Select, SimpleGrid, Stack, Text, TextInput } from '@mantine/core'
-import { useForm } from '@mantine/form'
+import { DateTimePicker } from '@mantine/dates'
+import { useForm, type UseFormReturnType } from '@mantine/form'
+import { useState } from 'react'
 import { useNavigate } from 'react-router'
+import { validateBouts, type BoutDraft } from '@/entities/bout'
 import {
   EVENT_STATUSES,
   isoToLocalInput,
@@ -9,14 +12,20 @@ import {
   type VflEventInput,
 } from '@/entities/event'
 import { FormShell } from '@/shared/ui'
+import { BoutCardEditor } from './BoutCardEditor'
 
 interface EventFormProps {
   initialValues?: VflEventInput
+  /* Bouts are a sub-resource of the event rather than part of its DTO, so
+     they travel beside the event's own values instead of inside them. On
+     the create page there is no event to hang them off yet, so the page
+     saves the event first and the card immediately after. */
+  initialBouts?: BoutDraft[]
   loading?: boolean
   saving?: boolean
   error?: unknown
   submitLabel: string
-  onSubmit: (values: VflEventInput) => void
+  onSubmit: (values: VflEventInput, bouts: BoutDraft[]) => void
 }
 
 const EMPTY: VflEventInput = {
@@ -43,8 +52,43 @@ function SectionLabel({ children }: { children: string }) {
   )
 }
 
+type TimestampField = 'starts_at' | 'early_prelims_at' | 'prelims_at' | 'main_card_at'
+
+/* The four schedule fields are identical apart from their label and whether
+   they can be cleared, and the native `datetime-local` control they replace
+   was rendered by the browser, ignoring the theme entirely. */
+function ScheduleField({
+  form,
+  field,
+  label,
+  required,
+}: {
+  form: UseFormReturnType<VflEventInput>
+  field: TimestampField
+  label: string
+  required?: boolean
+}) {
+  return (
+    <DateTimePicker
+      label={label}
+      placeholder="Select date and time"
+      /* 24-hour clock: a fight card at 10:00 that means 22:00 is the kind of
+         mistake this screen exists to prevent. */
+      valueFormat="MMM D, YYYY · HH:mm"
+      timePickerProps={{ format: '24h', withDropdown: true }}
+      clearable={!required}
+      withAsterisk={required}
+      /* Mantine stores '' as no value, but its own empty value is null. */
+      value={form.values[field] || null}
+      onChange={(value) => form.setFieldValue(field, value ?? '')}
+      error={form.errors[field]}
+    />
+  )
+}
+
 export function EventForm({
   initialValues,
+  initialBouts,
   loading,
   saving,
   error,
@@ -52,6 +96,10 @@ export function EventForm({
   onSubmit,
 }: EventFormProps) {
   const navigate = useNavigate()
+  const [bouts, setBouts] = useState<BoutDraft[]>(initialBouts ?? [])
+  /* Keyed by draft key and filled on submit, so a half-typed bout is not
+     flagged while the card is still being built. */
+  const [boutErrors, setBoutErrors] = useState<Record<string, string>>({})
 
   const form = useForm<VflEventInput>({
     /* Every timestamp is edited as a local datetime string and converted
@@ -75,23 +123,33 @@ export function EventForm({
 
   return (
     <FormShell
-      onSubmit={form.onSubmit((values) =>
-        onSubmit({
-          ...values,
-          starts_at: localInputToIso(values.starts_at),
-          early_prelims_at: optionalIso(values.early_prelims_at),
-          prelims_at: optionalIso(values.prelims_at),
-          main_card_at: optionalIso(values.main_card_at),
-          subtitle: values.subtitle?.trim() || undefined,
-          venue_name: values.venue_name?.trim() || undefined,
-          city: values.city?.trim() || undefined,
-          region: values.region?.trim() || undefined,
-          country: values.country?.trim() || undefined,
-          broadcast_platform: values.broadcast_platform?.trim() || undefined,
-          ticket_url: values.ticket_url?.trim() || undefined,
-        }),
-      )}
+      onSubmit={form.onSubmit((values) => {
+        /* The event's own fields are already valid by the time Mantine
+           calls this, so only the card is left to check. */
+        const found = validateBouts(bouts)
+        setBoutErrors(found)
+        if (Object.keys(found).length > 0) return
+
+        onSubmit(
+          {
+            ...values,
+            starts_at: localInputToIso(values.starts_at),
+            early_prelims_at: optionalIso(values.early_prelims_at),
+            prelims_at: optionalIso(values.prelims_at),
+            main_card_at: optionalIso(values.main_card_at),
+            subtitle: values.subtitle?.trim() || undefined,
+            venue_name: values.venue_name?.trim() || undefined,
+            city: values.city?.trim() || undefined,
+            region: values.region?.trim() || undefined,
+            country: values.country?.trim() || undefined,
+            broadcast_platform: values.broadcast_platform?.trim() || undefined,
+            ticket_url: values.ticket_url?.trim() || undefined,
+          },
+          bouts,
+        )
+      })}
       onCancel={() => navigate('/events')}
+      maw={860}
       submitLabel={submitLabel}
       loading={loading}
       saving={saving}
@@ -125,31 +183,21 @@ export function EventForm({
           <SectionLabel>Schedule</SectionLabel>
         </Box>
 
-        <TextInput
-          label="Starts At"
-          type="datetime-local"
-          {...form.getInputProps('starts_at')}
-        />
+        <ScheduleField form={form} field="starts_at" label="Starts At" required />
 
         {/* Each segment goes out on air at its own time, so they are stored
             separately rather than derived from the start. */}
         <SimpleGrid cols={{ base: 1, sm: 3 }} spacing={22}>
-          <TextInput
-            label="Early Prelims"
-            type="datetime-local"
-            {...form.getInputProps('early_prelims_at')}
-          />
-          <TextInput
-            label="Prelims"
-            type="datetime-local"
-            {...form.getInputProps('prelims_at')}
-          />
-          <TextInput
-            label="Main Card"
-            type="datetime-local"
-            {...form.getInputProps('main_card_at')}
-          />
+          <ScheduleField form={form} field="early_prelims_at" label="Early Prelims" />
+          <ScheduleField form={form} field="prelims_at" label="Prelims" />
+          <ScheduleField form={form} field="main_card_at" label="Main Card" />
         </SimpleGrid>
+
+        <Box mt={14}>
+          <Divider mb={22} />
+        </Box>
+
+        <BoutCardEditor value={bouts} onChange={setBouts} errors={boutErrors} />
 
         <Box mt={14}>
           <Divider mb={22} />

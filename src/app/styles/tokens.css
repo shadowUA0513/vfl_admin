@@ -76,6 +76,16 @@
   --vfl-dur-hover: 180ms;
   --vfl-lift: -2px;
 
+  /* ---- Corners ----------------------------------------------------- */
+  /* A bout is read at a glance by which side a fighter is on, so the two
+     corners are tokens rather than one-off colours. Red is the brand red so
+     the card stays on palette; blue is the only non-brand hue in the system
+     and is kept desaturated so it sits beside #CB0106 without competing. */
+  --vfl-corner-red: var(--vfl-red);
+  --vfl-corner-red-wash: rgba(240, 23, 29, 0.09);
+  --vfl-corner-blue: #1f6feb;
+  --vfl-corner-blue-wash: rgba(31, 111, 235, 0.1);
+
   /* ---- Status ------------------------------------------------------ */
   /* Admin needs states the brand palette doesn't cover. Kept desaturated
      and outline-only so red stays the loudest thing on screen. */
@@ -134,4 +144,12 @@
   --vfl-hover-wash: rgba(0, 0, 0, 0.04);
   --vfl-track: rgba(0, 0, 0, 0.1);
   --vfl-scrollbar: #c4bdbd;
+
+  /* ---- Corners ----------------------------------------------------- */
+  /* Both corners darken against paper for the same reason the brand red
+     does: the bright versions vibrate on white. */
+  --vfl-corner-red: #cb0106;
+  --vfl-corner-red-wash: rgba(203, 1, 6, 0.07);
+  --vfl-corner-blue: #1a54b8;
+  --vfl-corner-blue-wash: rgba(26, 84, 184, 0.08);
 }

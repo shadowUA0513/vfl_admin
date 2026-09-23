@@ -1,0 +1,214 @@
+/* One snapshot per card: division, the belt holder, then the editorial
+   state. A table row could not give the champion a face, and the champion
+   is the whole point of a ranking. */
+.card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--vfl-border);
+  /* The accent below replaces the top border, exactly as the theme's
+     data-accent papers do — otherwise the two stack into a 3px line. */
+  border-top-color: transparent;
+  background-color: var(--vfl-bg-soft);
+  overflow: hidden;
+  /* The status line at the top of the card; overridden below for published
+     snapshots so the state reads at a glance across the grid. */
+  --ranking-accent: var(--vfl-border-strong);
+  transition:
+    border-color var(--vfl-dur-hover) var(--vfl-ease),
+    transform var(--vfl-dur-hover) var(--vfl-ease);
+}
+
+/* Drawn on the card rather than with border-top so it can sit above the
+   1px border without doubling the line. */
+.card::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: var(--vfl-accent-height);
+  background-color: var(--ranking-accent);
+}
+
+.card[data-published] {
+  --ranking-accent: var(--vfl-red);
+}
+
+.card:hover {
+  border-color: var(--vfl-red-border);
+  transform: translateY(var(--vfl-lift));
+}
+
+.card[data-removing] {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ---- Head ----------------------------------------------------------- */
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 24px 18px;
+}
+
+.headText {
+  min-width: 0;
+}
+
+.division {
+  font-size: clamp(24px, 2.2vw, 30px);
+  line-height: 0.92;
+  color: var(--vfl-white);
+}
+
+.divisionMeta {
+  display: block;
+  margin-block-start: 8px;
+  text-transform: capitalize;
+  /* Long division metadata truncates rather than pushing the status pill
+     onto a second line. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- Status --------------------------------------------------------- */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  padding: 5px 10px 5px 7px;
+  border: 1px solid var(--vfl-border-strong);
+  border-radius: var(--vfl-radius-chip);
+  color: var(--vfl-gray);
+  line-height: 1;
+}
+
+.card[data-published] .status {
+  border-color: var(--vfl-red-border);
+  color: var(--vfl-red-bright);
+}
+
+/* ---- Champion -------------------------------------------------------- */
+.champion {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px;
+  border-block: 1px solid var(--vfl-border);
+  /* A faint red floor under the belt holder, echoing the athlete card. */
+  background:
+    linear-gradient(90deg, rgba(240, 23, 29, 0.09) 0%, transparent 42%),
+    transparent;
+}
+
+.plate {
+  position: relative;
+  flex: none;
+  inline-size: 62px;
+  block-size: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--vfl-border);
+  background-color: var(--vfl-card);
+}
+
+.plate[data-vacant] {
+  border-style: dashed;
+  color: var(--vfl-gray-muted);
+}
+
+.photo {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+.initials {
+  font-size: 24px;
+  line-height: 1;
+  color: var(--vfl-border-strong);
+  user-select: none;
+}
+
+.plateIcon {
+  color: var(--vfl-gray-muted);
+}
+
+.championLabel {
+  display: block;
+  color: var(--vfl-red-bright);
+  margin-block-end: 6px;
+}
+
+.championLabel[data-vacant] {
+  color: var(--vfl-gray-muted);
+}
+
+.championName {
+  font-size: 20px;
+  line-height: 0.95;
+  color: var(--vfl-white);
+  overflow-wrap: anywhere;
+}
+
+/* ---- Details --------------------------------------------------------- */
+.details {
+  display: grid;
+  /* Notes take the room they need; the date column stays only as wide as a
+     formatted date, so the two never fight for space. */
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px 20px;
+  padding: 18px 24px;
+  flex-grow: 1;
+}
+
+.detail {
+  min-width: 0;
+}
+
+.detail:last-child {
+  text-align: right;
+}
+
+.detailValue {
+  margin-block-start: 7px;
+  font-size: 13px;
+  color: var(--vfl-gray);
+}
+
+/* ---- Footer ---------------------------------------------------------- */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px 12px 24px;
+  border-block-start: 1px solid var(--vfl-border);
+  background-color: var(--vfl-card-translucent);
+}
+
+.live {
+  color: var(--vfl-gray-muted);
+}
+
+.actions {
+  display: flex;
+  gap: 2px;
+}
+
+.remove:hover:not(:disabled) {
+  color: var(--vfl-red-bright);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card:hover {
+    transform: none;
+  }
+}

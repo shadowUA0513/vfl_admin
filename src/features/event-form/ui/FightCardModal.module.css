@@ -1,0 +1,374 @@
+/* ---- The event form's summary strip ---------------------------------- */
+.summary {
+  border: 1px solid var(--vfl-border);
+  padding: 16px 18px;
+}
+
+/* ---- Modal shell ----------------------------------------------------- */
+/* The dialog is tall by nature — a card runs to a dozen bouts — so the body
+   scrolls rather than the page behind it. */
+.modalBody {
+  padding-block-end: 24px;
+}
+
+.modalActions {
+  border-block-start: 1px solid var(--vfl-border);
+}
+
+/* The card being built on the left, the bout being worked on at the right.
+   Neither column shrinks below its content, hence the explicit minmax. */
+.builder {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  gap: 28px;
+  align-items: start;
+}
+
+.cardPane {
+  min-inline-size: 0;
+}
+
+.list {
+  border: 1px solid var(--vfl-border);
+  /* Not clipped: a bout lifted for dragging needs its shadow outside the
+     panel. The restrictToParentElement modifier keeps it in bounds. */
+  position: relative;
+}
+
+.empty {
+  padding: 22px;
+}
+
+/* ---- One bout on the card -------------------------------------------- */
+.bout {
+  padding: 12px 14px;
+  border-block-end: 1px solid var(--vfl-border);
+  background-color: var(--vfl-card);
+  position: relative;
+  transition: background-color var(--vfl-dur-hover) var(--vfl-ease);
+}
+
+.bout:last-child {
+  border-block-end: none;
+}
+
+.bout:hover {
+  background-color: var(--vfl-hover-wash);
+}
+
+/* The bout currently loaded in the panel, so it is obvious which line the
+   fields on the right belong to. */
+.bout[data-active] {
+  background-color: var(--vfl-bg-soft);
+}
+
+.bout[data-active]::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: 2px;
+  background-color: var(--vfl-red);
+}
+
+.bout[data-dragging] {
+  background-color: var(--vfl-bg-soft);
+  border: 1px solid var(--vfl-red-border);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  cursor: grabbing;
+}
+
+/* A bout that failed validation on the event form's submit. */
+.bout[data-invalid]::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: 2px;
+  background-color: var(--vfl-red-bright);
+  z-index: 1;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+/* The names and the bout's details, stacked. Giving the names a line of
+   their own is the whole point: sharing one with the details squeezed them
+   down to "alexandre ..." vs "joshu...". */
+.content {
+  min-inline-size: 0;
+}
+
+.handle {
+  color: var(--vfl-gray-muted);
+  cursor: grab;
+  /* Stops the browser claiming the vertical gesture as a page scroll, which
+     is what makes dragging work on touch at all. */
+  touch-action: none;
+}
+
+.handle:hover {
+  color: var(--vfl-white-soft);
+  background-color: transparent;
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+.boutNumber {
+  font-size: 19px;
+  line-height: 1;
+  color: var(--vfl-gray-muted);
+  min-inline-size: 14px;
+  text-align: right;
+}
+
+.names {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-inline-size: 0;
+  /* Two long names still beat the widest sensible panel, so they wrap onto
+     a second line rather than both being truncated to nothing. */
+  flex-wrap: wrap;
+}
+
+/* Each name is the way a result gets recorded: clicking one opens the menu
+   of methods that fighter could have won by. Styled as text rather than as
+   a button so the card still reads as a card, with the affordance coming
+   from hover. */
+.fighter {
+  font-size: 14.5px;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 9px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    border-color var(--vfl-dur-hover) var(--vfl-ease),
+    background-color var(--vfl-dur-hover) var(--vfl-ease),
+    opacity var(--vfl-dur-hover) var(--vfl-ease);
+}
+
+/* Fighter names are entered however the admin typed them — often all
+   lowercase. Capitalising on the way out leaves the stored value alone and
+   only lifts a first letter, so a correctly typed "McGregor" survives. */
+.fighterName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+/* The only thing carrying which corner is which once the pickers are gone,
+   so the two names are coloured rather than the row. */
+.fighter[data-corner='red'] {
+  color: var(--vfl-corner-red);
+}
+
+.fighter[data-corner='blue'] {
+  color: var(--vfl-corner-blue);
+}
+
+.fighter:hover {
+  border-color: currentColor;
+}
+
+/* Beaten, once the bout has a winner. Pulling the loser back is what makes
+   a column of ten results readable without reading any of them. */
+.fighter[data-lost] {
+  opacity: 0.45;
+}
+
+.fighter[data-lost]:hover {
+  opacity: 1;
+}
+
+/* The winner. Filled rather than outlined, because on a card of ten bouts
+   the question being scanned is "who won", and an outline reads as a
+   hover state rather than as a settled fact. */
+/* Literal white, not --vfl-white: that token flips to near-black in light
+   mode, and the fill underneath it stays a saturated red or blue in both. */
+.fighter[data-won] {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.fighter[data-won][data-corner='red'] {
+  background-color: var(--vfl-corner-red);
+  border-color: var(--vfl-corner-red);
+}
+
+.fighter[data-won][data-corner='blue'] {
+  background-color: var(--vfl-corner-blue);
+  border-color: var(--vfl-corner-blue);
+}
+
+.winBadge {
+  font-family: var(--vfl-font-body);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  padding: 3px 4px 2px;
+  background-color: rgba(255, 255, 255, 0.25);
+  flex: none;
+}
+
+.names .versus {
+  flex: none;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--vfl-gray-muted);
+}
+
+.tags {
+  display: block;
+  margin-block-start: 6px;
+  margin-inline-start: 9px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--vfl-gray-muted);
+}
+
+.remove:hover {
+  color: var(--vfl-red-bright);
+}
+
+.error {
+  margin-block-start: 6px;
+  margin-inline-start: 62px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- The bout panel --------------------------------------------------- */
+.panel {
+  border: 1px solid var(--vfl-border);
+  border-block-start: var(--vfl-accent-height) solid var(--vfl-red);
+  background-color: var(--vfl-bg-soft);
+  padding: 22px;
+}
+
+.matchup {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+}
+
+.corner {
+  min-inline-size: 0;
+  border-inline-start: 2px solid var(--vfl-border);
+  padding-inline-start: 10px;
+}
+
+.corner[data-corner='red'] {
+  border-inline-start-color: var(--vfl-corner-red);
+}
+
+.corner[data-corner='blue'] {
+  border-inline-start-color: var(--vfl-corner-blue);
+}
+
+.cornerLabel {
+  font-family: var(--vfl-font-body);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: var(--vfl-tracking-label);
+  text-transform: uppercase;
+  margin-block-end: 6px;
+}
+
+.corner[data-corner='red'] .cornerLabel {
+  color: var(--vfl-corner-red);
+}
+
+.corner[data-corner='blue'] .cornerLabel {
+  color: var(--vfl-corner-blue);
+}
+
+/* Reserves its line with a non-breaking space when a fighter has no
+   nickname, so the two corners stay level with each other. */
+.cornerMeta {
+  margin-block-start: 6px;
+  min-block-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.matchup .versus {
+  font-size: 16px;
+  color: var(--vfl-gray-muted);
+  /* Nudged down to sit level with the selects rather than with the corner
+     labels above them. */
+  padding-block-start: 24px;
+}
+
+.panelActions {
+  margin-block-start: 4px;
+}
+
+.grow {
+  flex: 1;
+}
+
+/* ---- Narrow ----------------------------------------------------------- */
+/* At this width the modal is already full screen, so the two panes stack
+   and the panel leads: adding a bout is what the screen is for. */
+@media (max-width: 980px) {
+  .builder {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .panel {
+    order: -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .matchup {
+    grid-template-columns: 1fr;
+  }
+
+  .matchup .versus {
+    padding-block-start: 0;
+    padding-inline-start: 12px;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bout[data-dragging] {
+    box-shadow: none;
+  }
+}
+
+/* ---- The result menu -------------------------------------------------- */
+/* The method already recorded, so reopening the menu shows what was picked
+   rather than looking like nothing was. */
+.methodItem[data-chosen] {
+  color: var(--vfl-red-bright);
+  font-weight: 600;
+}
+
+.clearItem {
+  color: var(--vfl-gray-muted);
+}
+
+.clearItem:hover {
+  color: var(--vfl-red-bright);
+}

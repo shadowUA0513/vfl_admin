@@ -41,8 +41,8 @@ export interface VflEventInput {
 
 export const EVENT_STATUSES: EventStatus[] = ['scheduled', 'completed', 'cancelled']
 
-/* The API takes and returns RFC3339 timestamps, but `datetime-local` inputs
-   speak `YYYY-MM-DDTHH:mm` in the viewer's own timezone. These two convert
+/* The API takes and returns RFC3339 timestamps, but Mantine's date inputs
+   speak `YYYY-MM-DD HH:mm:ss` in the viewer's own timezone. These two convert
    between the pair, which is the only place timezone handling happens. */
 
 export function isoToLocalInput(iso: string | undefined): string {
@@ -50,12 +50,16 @@ export function isoToLocalInput(iso: string | undefined): string {
   const parsed = new Date(iso)
   if (Number.isNaN(parsed.getTime())) return ''
   const offsetMs = parsed.getTimezoneOffset() * 60_000
-  return new Date(parsed.getTime() - offsetMs).toISOString().slice(0, 16)
+  /* Shifting by the offset first makes toISOString() print local wall-clock
+     time; Mantine wants it space-separated rather than with the `T`. */
+  return new Date(parsed.getTime() - offsetMs).toISOString().slice(0, 19).replace('T', ' ')
 }
 
 export function localInputToIso(local: string): string {
   if (!local) return ''
-  const parsed = new Date(local)
+  /* `new Date('YYYY-MM-DD HH:mm:ss')` is not specified — only the `T` form is
+     guaranteed to parse as local time — so the separator is normalised here. */
+  const parsed = new Date(local.trim().replace(' ', 'T'))
   return Number.isNaN(parsed.getTime()) ? '' : parsed.toISOString()
 }
 

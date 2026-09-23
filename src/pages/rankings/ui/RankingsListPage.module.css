@@ -1,0 +1,55 @@
+.emptyTitle {
+  font-size: 30px;
+  line-height: 0.9;
+}
+
+/* ---- Summary strip ---------------------------------------------------- */
+/* Three counts over the grid: how many boards exist, how many are live, and
+   how much is still sitting in draft — the one number an editor acts on. */
+.summary {
+  display: flex;
+  border: 1px solid var(--vfl-border);
+  border-top-color: transparent;
+  background-color: var(--vfl-bg-soft);
+  position: relative;
+}
+
+.summary::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: var(--vfl-accent-height);
+  background-color: var(--vfl-red);
+}
+
+.stat {
+  flex: 1 1 0;
+  padding: 20px 24px;
+  min-width: 0;
+}
+
+.stat + .stat {
+  border-inline-start: 1px solid var(--vfl-border);
+}
+
+.statValue {
+  font-size: 40px;
+  line-height: 0.9;
+  margin-block-start: 12px;
+}
+
+.statValue[data-pending] {
+  color: var(--vfl-red-bright);
+}
+
+@media (max-width: 36em) {
+  .summary {
+    flex-direction: column;
+  }
+
+  .stat + .stat {
+    border-inline-start: none;
+    border-block-start: 1px solid var(--vfl-border);
+  }
+}
