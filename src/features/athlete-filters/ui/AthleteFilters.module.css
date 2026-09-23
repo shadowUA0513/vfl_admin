@@ -1,0 +1,48 @@
+.bar {
+  border: 1px solid var(--vfl-border);
+  padding: 18px;
+  /* Dimmed while a changed filter is in flight. The rows underneath stay
+     put (react-query keeps the previous page), so this is the only signal
+     that the list is about to change. */
+  transition: opacity var(--vfl-dur-hover) var(--vfl-ease);
+}
+
+.bar[data-busy] {
+  opacity: 0.6;
+}
+
+/* The search is the control that gets used, so it takes the slack and the
+   two selects stay at a fixed, readable width. */
+.search {
+  flex: 1;
+  min-inline-size: 240px;
+}
+
+.select {
+  inline-size: 220px;
+}
+
+.statusSelect {
+  inline-size: 150px;
+}
+
+.clear {
+  color: var(--vfl-gray-muted);
+}
+
+.clear:hover {
+  color: var(--vfl-red-bright);
+}
+
+.count {
+  margin-block-start: 12px;
+}
+
+@media (max-width: 720px) {
+  .search,
+  .select,
+  .statusSelect {
+    inline-size: 100%;
+    flex: none;
+  }
+}

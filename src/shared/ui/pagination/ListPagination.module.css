@@ -1,0 +1,34 @@
+.root {
+  border-block-start: 1px solid var(--vfl-border);
+  padding-block-start: 18px;
+}
+
+.control {
+  border-color: var(--vfl-border);
+  font-family: var(--vfl-font-body);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  transition:
+    border-color var(--vfl-dur-hover) var(--vfl-ease),
+    color var(--vfl-dur-hover) var(--vfl-ease);
+}
+
+.control:hover:not([data-active]):not(:disabled) {
+  border-color: var(--vfl-border-strong);
+  background-color: var(--vfl-hover-wash);
+}
+
+.control[data-active] {
+  background-color: var(--vfl-red);
+  border-color: var(--vfl-red);
+  /* Literal white: --vfl-white flips to near-black in light mode, and the
+     fill under it stays the brand red in both. */
+  color: #ffffff;
+}
+
+@media (max-width: 560px) {
+  .root {
+    flex-direction: column;
+    gap: 14px;
+  }
+}

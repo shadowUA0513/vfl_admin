@@ -8,7 +8,7 @@ import {
   usePublishRanking,
   type RankingSnapshot,
 } from '@/entities/ranking'
-import { ConfirmDialog, PageHeader } from '@/shared/ui'
+import { ConfirmDialog, ListPagination, PAGE_SIZE, PageHeader } from '@/shared/ui'
 import classes from './RankingsListPage.module.css'
 
 /* Drafts first, then published, each alphabetical by division: the boards
@@ -24,16 +24,34 @@ function sortSnapshots(rows: RankingSnapshot[]): RankingSnapshot[] {
 
 export function RankingsListPage() {
   const navigate = useNavigate()
-  const { data, isLoading, error } = rankingQueries.useList()
+  const [page, setPage] = useState(1)
+  const { data, isLoading, error } = rankingQueries.useListPage({ page, limit: PAGE_SIZE })
   const remove = rankingQueries.useRemove()
   const publish = usePublishRanking()
 
   const [pendingRemoval, setPendingRemoval] = useState<RankingSnapshot | null>(null)
   const [pendingPublish, setPendingPublish] = useState<RankingSnapshot | null>(null)
 
-  const snapshots = data ? sortSnapshots(data) : []
-  const publishedCount = snapshots.filter((row) => row.status === 'published').length
-  const draftCount = snapshots.length - publishedCount
+  /* Sorted within the page rather than across the whole set: the API owns
+     the order the pages are cut in, and this only tidies what is on screen. */
+  const snapshots = data ? sortSnapshots(data.rows) : []
+
+  /* Deleting the last row on a page would otherwise leave it empty with no
+     way back but the pager. */
+  const stepBackIfEmptied = () => {
+    if (snapshots.length === 1 && page > 1) setPage(page - 1)
+  }
+
+  /* The summary counts every snapshot, not just the page on screen — a
+     board still awaiting publish matters whether or not it happens to be
+     visible. That needs the unpaginated list, which is a second request,
+     and worth it: "2 awaiting publish" that silently meant "on this page"
+     is the kind of number someone would act on and be wrong about.
+     Rankings are one per division, so the list is short. */
+  const { data: allSnapshots } = rankingQueries.useList()
+  const total = allSnapshots?.length ?? 0
+  const publishedCount = (allSnapshots ?? []).filter((row) => row.status === 'published').length
+  const draftCount = total - publishedCount
 
   const createButton = (
     <Button leftSection={<IconPlus size={16} />} onClick={() => navigate('/rankings/new')}>
@@ -82,9 +100,7 @@ export function RankingsListPage() {
           <Box className={`${classes.summary} vfl-enter`}>
             <Box className={classes.stat}>
               <Text className="vfl-label">Divisions Ranked</Text>
-              <Text className={`vfl-display vfl-numeric ${classes.statValue}`}>
-                {snapshots.length}
-              </Text>
+              <Text className={`vfl-display vfl-numeric ${classes.statValue}`}>{total}</Text>
             </Box>
             <Box className={classes.stat}>
               <Text className="vfl-label">Published</Text>
@@ -119,6 +135,8 @@ export function RankingsListPage() {
         </>
       )}
 
+      <ListPagination meta={data?.meta} page={page} onPageChange={setPage} />
+
       <ConfirmDialog
         opened={pendingRemoval !== null}
         title="Remove Ranking"
@@ -127,7 +145,10 @@ export function RankingsListPage() {
         onCancel={() => setPendingRemoval(null)}
         onConfirm={() => {
           if (!pendingRemoval) return
-          remove.mutate(pendingRemoval.id, { onSettled: () => setPendingRemoval(null) })
+          remove.mutate(pendingRemoval.id, {
+            onSuccess: stepBackIfEmptied,
+            onSettled: () => setPendingRemoval(null),
+          })
         }}
       />
 

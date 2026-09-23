@@ -39,20 +39,68 @@ interface ListEnvelope<T> {
   meta: ListMeta
 }
 
-/* The API defaults to 20 rows per page. Admin lists are not paginated in the
-   UI yet, so one large page is requested instead of silently showing the
-   first 20 of a longer list. */
+/* What a caller gets when it asks for no particular page.
+
+   The list screens pass their own, smaller `limit`. This default is for
+   everything else — the selects in the forms, which need the whole roster
+   in one go rather than a page of it. */
 const LIST_LIMIT = 100
 
-/** Some endpoints return the envelope, others a bare array. Handle both. */
-function unwrapList<T>(payload: ListEnvelope<T> | T[] | null): T[] {
-  if (Array.isArray(payload)) return payload
-  if (payload && Array.isArray(payload.data)) return payload.data
-  return []
+/** Rows for the page that was asked for, plus where that page sits. */
+export interface ListResult<T> {
+  rows: T[]
+  meta: ListMeta
+}
+
+/* Some endpoints return the envelope, others a bare array. A bare array is
+   the whole result by definition, so it gets a one-page meta rather than
+   leaving callers to handle a missing one. */
+function unwrapList<T>(payload: ListEnvelope<T> | T[] | null): ListResult<T> {
+  if (Array.isArray(payload)) {
+    return {
+      rows: payload,
+      meta: { page: 1, limit: payload.length, total: payload.length, total_pages: 1 },
+    }
+  }
+
+  if (payload && Array.isArray(payload.data)) {
+    return { rows: payload.data, meta: payload.meta }
+  }
+
+  return { rows: [], meta: { page: 1, limit: 0, total: 0, total_pages: 0 } }
+}
+
+/**
+ * Query string for a list request — `search`, `division_id`, `status` and
+ * the like, which the API applies server-side.
+ *
+ * Kept open rather than typed per resource: every list endpoint takes a
+ * different set, and this layer only has to pass them along.
+ */
+export type ListParams = Record<string, string | number | undefined>
+
+/**
+ * Drops blanks, and returns undefined when nothing is left.
+ *
+ * An empty select reads as '' or null, which would otherwise be sent as
+ * `?status=` and narrow the results to nothing. Collapsing an all-blank set
+ * to undefined also keeps an unfiltered list on one cache entry rather than
+ * one per shape of empty filter object.
+ */
+export function cleanListParams(params: ListParams | undefined): ListParams | undefined {
+  if (!params) return undefined
+
+  const cleaned: ListParams = {}
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || value === null || value === '') continue
+    cleaned[key] = value
+  }
+
+  return Object.keys(cleaned).length > 0 ? cleaned : undefined
 }
 
 export interface ResourceApi<T, TInput> {
-  list(): Promise<T[]>
+  list(params?: ListParams): Promise<ListResult<T>>
   get(id: string): Promise<T>
   create(input: TInput): Promise<T>
   update(id: string, input: TInput): Promise<T>
@@ -66,10 +114,20 @@ export function createResourceApi<T extends Identified, TInput>(
   const mock = createMockCollection<T, TInput>(config.mockKey, seed)
 
   return {
-    async list() {
-      if (USING_MOCK_API) return mock.list()
+    async list(params) {
+      /* The mock has no query support, so it returns everything on one
+         page — unfiltered and unpaginated. Only reachable with no API
+         configured, where the point is to render the screens at all. */
+      if (USING_MOCK_API) {
+        const rows = await mock.list()
+        return {
+          rows,
+          meta: { page: 1, limit: rows.length, total: rows.length, total_pages: 1 },
+        }
+      }
+
       const { data } = await api.get<ListEnvelope<T> | T[]>(config.readPath, {
-        params: { limit: LIST_LIMIT },
+        params: { limit: LIST_LIMIT, ...cleanListParams(params) },
       })
       return unwrapList<T>(data)
     },
@@ -124,8 +182,33 @@ export function createResourceQueries<T extends Identified, TInput>(
   return {
     keys,
 
-    useList() {
-      return useQuery({ queryKey: keys.list, queryFn: resourceApi.list })
+    /* Filters and the page are part of the cache key, so each combination
+       is its own entry and going back to one is instant. `keys.all` still
+       covers them all, so a mutation invalidates every page of every
+       filtered list. */
+    useListPage(params?: ListParams) {
+      const cleaned = cleanListParams(params)
+      return useQuery({
+        queryKey: cleaned ? [...keys.list, cleaned] : keys.list,
+        queryFn: () => resourceApi.list(cleaned),
+        /* Keeps the previous rows on screen while the next page or a new
+           filter loads, so the list dims rather than collapsing to a
+           spinner on every keystroke and page click. */
+        placeholderData: (previous) => previous,
+      })
+    },
+
+    /* The rows alone, for callers with nothing to paginate — the selects in
+       the forms, which want the whole roster rather than a page of it.
+       Same query as useListPage, so asking for both costs one request. */
+    useList(params?: ListParams) {
+      const cleaned = cleanListParams(params)
+      return useQuery({
+        queryKey: cleaned ? [...keys.list, cleaned] : keys.list,
+        queryFn: () => resourceApi.list(cleaned),
+        select: (result) => result.rows,
+        placeholderData: (previous) => previous,
+      })
     },
 
     useItem(id: string | undefined) {

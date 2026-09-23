@@ -1,5 +1,5 @@
 export { api, apiErrorMessage, setUnauthorizedHandler } from './client'
-export { createResourceApi, createResourceQueries } from './resource'
+export { createResourceApi, createResourceQueries, cleanListParams } from './resource'
 export {
   uploadImage,
   isImageFile,
@@ -7,4 +7,4 @@ export {
   MAX_UPLOAD_BYTES,
   type UploadFolder,
 } from './uploads'
-export type { ResourceApi, UpdateArgs } from './resource'
+export type { ResourceApi, UpdateArgs, ListParams, ListResult, ListMeta } from './resource'

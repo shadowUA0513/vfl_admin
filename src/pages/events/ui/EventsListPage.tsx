@@ -3,7 +3,14 @@ import { IconPlus } from '@tabler/icons-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { eventQueries, type VflEvent } from '@/entities/event'
-import { ConfirmDialog, DataTable, PageHeader, type Column } from '@/shared/ui'
+import {
+  ConfirmDialog,
+  DataTable,
+  ListPagination,
+  PAGE_SIZE,
+  PageHeader,
+  type Column,
+} from '@/shared/ui'
 
 function statusColor(status: VflEvent['status']) {
   if (status === 'cancelled') return 'var(--vfl-red-bright)'
@@ -60,9 +67,16 @@ const COLUMNS: Array<Column<VflEvent>> = [
 
 export function EventsListPage() {
   const navigate = useNavigate()
-  const { data, isLoading, error } = eventQueries.useList()
+  const [page, setPage] = useState(1)
+  const { data, isLoading, error } = eventQueries.useListPage({ page, limit: PAGE_SIZE })
   const remove = eventQueries.useRemove()
   const [pendingRemoval, setPendingRemoval] = useState<VflEvent | null>(null)
+
+  /* Deleting the last row on a page would otherwise leave it empty with no
+     way back but the pager. */
+  const stepBackIfEmptied = () => {
+    if (data?.rows.length === 1 && page > 1) setPage(page - 1)
+  }
 
   const createButton = (
     <Button leftSection={<IconPlus size={16} />} onClick={() => navigate('/events/new')}>
@@ -76,7 +90,7 @@ export function EventsListPage() {
 
       <DataTable
         columns={COLUMNS}
-        rows={data}
+        rows={data?.rows}
         isLoading={isLoading}
         error={error}
         errorMessage="Could not load events."
@@ -88,6 +102,8 @@ export function EventsListPage() {
         removingId={remove.isPending ? pendingRemoval?.id : null}
       />
 
+      <ListPagination meta={data?.meta} page={page} onPageChange={setPage} />
+
       <ConfirmDialog
         opened={pendingRemoval !== null}
         title="Remove Event"
@@ -96,7 +112,10 @@ export function EventsListPage() {
         onCancel={() => setPendingRemoval(null)}
         onConfirm={() => {
           if (!pendingRemoval) return
-          remove.mutate(pendingRemoval.id, { onSettled: () => setPendingRemoval(null) })
+          remove.mutate(pendingRemoval.id, {
+            onSuccess: stepBackIfEmptied,
+            onSettled: () => setPendingRemoval(null),
+          })
         }}
       />
     </Stack>
