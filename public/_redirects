@@ -1,1 +1,8 @@
-/*    /index.html   200
+# The backend is HTTP-only and this site is served over HTTPS, so a direct
+# call from the browser is blocked as mixed content. Netlify proxies it
+# server-side instead: the browser only ever talks to this origin.
+# Must come before the SPA rule below — redirects are matched in order.
+/api/*  http://46.62.230.64:8081/api/v1/:splat  200
+
+# Every other path belongs to the router, not the file system.
+/*      /index.html                             200
