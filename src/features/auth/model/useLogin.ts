@@ -17,6 +17,7 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: login,
+    meta: { successMessage: 'Signed in', errorMessage: 'Sign-in failed' },
     onSuccess: ({ token, user, expires_at }) => {
       /* expires_at is what drives automatic sign-out; without it the app
          would only notice expiry on the next 401. */

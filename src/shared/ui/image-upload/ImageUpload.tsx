@@ -9,6 +9,7 @@ import {
   uploadImage,
   type UploadFolder,
 } from '@/shared/api'
+import { notifyError, notifySuccess } from '@/shared/lib/notify'
 import classes from './ImageUpload.module.css'
 
 interface ImageUploadProps {
@@ -50,8 +51,11 @@ export function ImageUpload({ label, folder, value, onChange, description }: Ima
     setProgress(0)
     try {
       onChange(await uploadImage(folder, file, setProgress))
+      notifySuccess('Image uploaded')
     } catch (cause) {
-      setError(apiErrorMessage(cause, 'Upload failed'))
+      const message = apiErrorMessage(cause, 'Upload failed')
+      setError(message)
+      notifyError(message, 'Could not upload image')
     } finally {
       setUploading(false)
     }

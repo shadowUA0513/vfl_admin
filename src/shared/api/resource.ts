@@ -167,7 +167,11 @@ export interface UpdateArgs<TInput> {
 export function createResourceQueries<T extends Identified, TInput>(
   resource: string,
   resourceApi: ResourceApi<T, TInput>,
+  /** Singular name for toasts. Defaults to the key minus its plural `s`. */
+  label = resource.charAt(0).toUpperCase() + resource.slice(1).replace(/s$/, ''),
 ) {
+  const noun = label.toLowerCase()
+
   const keys = {
     all: [resource] as const,
     list: [resource, 'list'] as const,
@@ -191,6 +195,7 @@ export function createResourceQueries<T extends Identified, TInput>(
       return useQuery({
         queryKey: cleaned ? [...keys.list, cleaned] : keys.list,
         queryFn: () => resourceApi.list(cleaned),
+        meta: { errorMessage: `Could not load ${noun}s` },
         /* Keeps the previous rows on screen while the next page or a new
            filter loads, so the list dims rather than collapsing to a
            spinner on every keystroke and page click. */
@@ -206,6 +211,7 @@ export function createResourceQueries<T extends Identified, TInput>(
       return useQuery({
         queryKey: cleaned ? [...keys.list, cleaned] : keys.list,
         queryFn: () => resourceApi.list(cleaned),
+        meta: { errorMessage: `Could not load ${noun}s` },
         select: (result) => result.rows,
         placeholderData: (previous) => previous,
       })
@@ -215,6 +221,7 @@ export function createResourceQueries<T extends Identified, TInput>(
       return useQuery({
         queryKey: keys.detail(id ?? ''),
         queryFn: () => resourceApi.get(id as string),
+        meta: { errorMessage: `Could not load ${noun}` },
         enabled: Boolean(id),
       })
     },
@@ -223,6 +230,7 @@ export function createResourceQueries<T extends Identified, TInput>(
       const invalidate = useInvalidate()
       return useMutation({
         mutationFn: (input: TInput) => resourceApi.create(input),
+        meta: { successMessage: `${label} created`, errorMessage: `Could not create ${noun}` },
         onSuccess: invalidate,
       })
     },
@@ -231,6 +239,7 @@ export function createResourceQueries<T extends Identified, TInput>(
       const invalidate = useInvalidate()
       return useMutation({
         mutationFn: ({ id, input }: UpdateArgs<TInput>) => resourceApi.update(id, input),
+        meta: { successMessage: `${label} saved`, errorMessage: `Could not save ${noun}` },
         onSuccess: invalidate,
       })
     },
@@ -239,6 +248,7 @@ export function createResourceQueries<T extends Identified, TInput>(
       const invalidate = useInvalidate()
       return useMutation({
         mutationFn: (id: string) => resourceApi.remove(id),
+        meta: { successMessage: `${label} removed`, errorMessage: `Could not remove ${noun}` },
         onSuccess: invalidate,
       })
     },

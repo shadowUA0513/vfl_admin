@@ -1,8 +1,9 @@
-import { Button, Stack, Text } from '@mantine/core'
-import { IconPlus } from '@tabler/icons-react'
+import { ActionIcon, Button, Stack, Text, Tooltip } from '@mantine/core'
+import { IconPhoto, IconPlus } from '@tabler/icons-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { eventQueries, type VflEvent } from '@/entities/event'
+import { BannerModal } from '@/features/event-banner'
 import {
   ConfirmDialog,
   DataTable,
@@ -71,6 +72,7 @@ export function EventsListPage() {
   const { data, isLoading, error } = eventQueries.useListPage({ page, limit: PAGE_SIZE })
   const remove = eventQueries.useRemove()
   const [pendingRemoval, setPendingRemoval] = useState<VflEvent | null>(null)
+  const [bannerEvent, setBannerEvent] = useState<VflEvent | null>(null)
 
   /* Deleting the last row on a page would otherwise leave it empty with no
      way back but the pager. */
@@ -100,9 +102,24 @@ export function EventsListPage() {
         onEdit={(event) => navigate(`/events/${event.id}/edit`)}
         onRemove={setPendingRemoval}
         removingId={remove.isPending ? pendingRemoval?.id : null}
+        rowActions={(event) => (
+          <Tooltip label="Banner" withArrow={false}>
+            <ActionIcon
+              variant="subtle"
+              size={30}
+              radius={0}
+              aria-label="Generate banner"
+              onClick={() => setBannerEvent(event)}
+            >
+              <IconPhoto size={15} />
+            </ActionIcon>
+          </Tooltip>
+        )}
       />
 
       <ListPagination meta={data?.meta} page={page} onPageChange={setPage} />
+
+      <BannerModal event={bannerEvent} onClose={() => setBannerEvent(null)} />
 
       <ConfirmDialog
         opened={pendingRemoval !== null}

@@ -35,6 +35,7 @@ export function usePublishRanking() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: publish,
+    meta: { successMessage: 'Ranking published', errorMessage: 'Could not publish ranking' },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: rankingQueries.keys.all }),
   })
 }

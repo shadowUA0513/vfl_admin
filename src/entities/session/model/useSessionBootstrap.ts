@@ -20,6 +20,8 @@ export function useSessionBootstrap(): void {
     enabled: status === 'checking',
     retry: false,
     staleTime: Infinity,
+    /* A failed check just lands on the login screen, which says enough. */
+    meta: { silent: true },
   })
 
   useEffect(() => {

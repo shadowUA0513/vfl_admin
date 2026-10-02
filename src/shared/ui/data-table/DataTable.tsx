@@ -26,6 +26,8 @@ interface DataTableProps<T extends { id: string }> {
   onRemove: (row: T) => void
   /** Id currently being deleted, so its row can show the pending state. */
   removingId?: string | null
+  /** Resource-specific row actions, shown before Edit and Remove. */
+  rowActions?: (row: T) => ReactNode
 }
 
 export function DataTable<T extends { id: string }>({
@@ -40,6 +42,7 @@ export function DataTable<T extends { id: string }>({
   onEdit,
   onRemove,
   removingId,
+  rowActions,
 }: DataTableProps<T>) {
   if (isLoading) {
     return (
@@ -97,7 +100,7 @@ export function DataTable<T extends { id: string }>({
               ))}
               {/* Actions column: header left blank so it reads as chrome
                   rather than data. */}
-              <Table.Th w={92} />
+              <Table.Th w={rowActions ? 124 : 92} />
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
@@ -116,6 +119,7 @@ export function DataTable<T extends { id: string }>({
                       every row is a wall of repeated words. The tooltip and
                       aria-label carry the meaning instead. */}
                   <Group gap={2} justify="flex-end" wrap="nowrap">
+                    {rowActions?.(row)}
                     <Tooltip label="Edit" withArrow={false}>
                       <ActionIcon
                         variant="subtle"

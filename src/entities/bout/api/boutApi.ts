@@ -162,6 +162,7 @@ export const boutQueries = {
     return useQuery({
       queryKey: keys.list(eventId ?? ''),
       queryFn: () => listBouts(eventId as string),
+      meta: { errorMessage: 'Could not load fight card' },
       enabled: Boolean(eventId),
     })
   },
@@ -171,6 +172,7 @@ export const boutQueries = {
     const queryClient = useQueryClient()
     return useMutation({
       mutationFn: syncBouts,
+      meta: { successMessage: 'Fight card saved', errorMessage: 'Could not save fight card' },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: keys.all })
         /* A result moves the two fighters' win/loss record, which the API

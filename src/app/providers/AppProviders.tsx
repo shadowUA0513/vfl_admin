@@ -1,4 +1,5 @@
 import { MantineProvider } from '@mantine/core'
+import { Notifications } from '@mantine/notifications'
 import { QueryClientProvider } from '@tanstack/react-query'
 import type { ReactNode } from 'react'
 import { BrowserRouter } from 'react-router'
@@ -13,6 +14,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
       cssVariablesResolver={cssVariablesResolver}
       defaultColorScheme="dark"
     >
+      <Notifications position="top-right" limit={5} />
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>{children}</BrowserRouter>
       </QueryClientProvider>
